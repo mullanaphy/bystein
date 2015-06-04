@@ -1,0 +1,9 @@
+<div class="page-header">
+    <h1><a href="<?= $this->url('admin') ?>">Admin
+            Panel</a> &raquo; <a href="<?= $this->url('admin/gallery') ?>">
+            Galleries</a> &raquo; <?= $this->clean($item->name) ?>
+        <a href="<?= $this->url('admin/image/id/0?gallery_id=' . $item->id()) ?>">
+            <small><i class="glyphicon glyphicon-plus-sign"></i></small>
+        </a>
+    </h1>
+</div>

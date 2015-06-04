@@ -1,0 +1,24 @@
+<div class="page-header">
+    <h1>Gym News</h1>
+</div>
+<?php if ($collection->count()): ?>
+    <?php foreach ($collection as $item): ?>
+        <div class="media">
+            <div class="media-heading">
+                <h4><a href="<?= $this->url('news/' . $item->slug) ?>"><?= $this->clean($item->title) ?></a>
+                    <small>
+                        <time
+                            datetime="<?= date('Y-m-d\TH:i:sa', strtotime($item->created)) ?>"><?= date('F j, Y', strtotime($item->created)) ?></time>
+                    </small>
+                </h4>
+            </div>
+            <div class="media-body">
+                <?= \Michelf\Markdown::defaultTransform($this->clean((new \PHY\Variable\Str(ucfirst($item->content)))->toShorten(256))) ?>
+            </div>
+        </div>
+    <?php endforeach ?>
+    <?= $this->child('news/pagination') ?>
+<?php else: ?>
+    <p>No news to report on yet.</p>
+    <?= $this->child('news/pagination') ?>
+<?php endif ?>

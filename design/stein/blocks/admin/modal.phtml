@@ -1,0 +1,23 @@
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div class="modal fade" id="modal-logout" tabindex="-1" role="dialog" aria-labelledby="modal-logout-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal-logout-label">Logout</h4>
+            </div>
+            <div class="modal-body">
+                <p>Sure you wish to logout? If you haven't saved any edited/added info it won't be saved. Otherwise
+                    nothing bad will happen</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a href="<?= $this->url('logout') ?>" type="button" class="btn btn-danger">Logout!</a>
+            </div>
+        </div>
+    </div>
+</div>

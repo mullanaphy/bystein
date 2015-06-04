@@ -1,0 +1,6 @@
+/vendor/
+/var/
+/config/stein/
+/.idea/
+/STN.iml
+/composer.lock

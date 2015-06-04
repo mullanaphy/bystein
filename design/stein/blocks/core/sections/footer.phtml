@@ -1,0 +1,62 @@
+<?php
+    /**
+     * Phyneapple!
+     * LICENSE
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@phyneapple.com so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY\Phyneapple
+     * @copyright Copyright (c) 2013 Phyneapple! (http://www.phyneapple.com/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy <john@jo.mu>
+     * @var $this \PHY\View\Block
+     */
+?>
+<?php
+    if (isset($js)):
+        $tag = $this->tag();
+        foreach ($js as $file):
+            echo $tag->script->attributes($file);
+        endforeach;
+    endif
+?>
+<div class="modal fade" id="modal-contact">
+    <form action="<?= $this->url('contact') ?>" method="post">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Contact</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="contact-name">Name</label>
+                        <input type="text" class="form-control" name="contact[Name]" id="contact-name"
+                               placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" class="form-control" name="contact[Email]" id="contact-email"
+                               placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea class="form-control" name="contact[Message]" rows="5" id="contact-message"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">try{if(typeof console!=='undefined'&&typeof console.log!=='undefined')console.log('Generation: <?=$app->getDebugger()->profile()?>')}catch(e){}</script>

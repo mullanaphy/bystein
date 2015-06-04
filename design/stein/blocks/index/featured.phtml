@@ -1,0 +1,28 @@
+<?php $count = count($collection); ?>
+<?php if ($count): ?>
+    <?php $active = false; ?>
+    <div id="carousel-featured" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-featured" data-slide-to="0" class="active"></li>
+            <?php for ($i = 1; $i < $count; ++$i): ?>
+                <li data-target="#carousel-featured" data-slide-to="<?= $i ?>"></li>
+            <?php endfor ?>
+        </ol>
+        <div class="carousel-inner">
+            <?php foreach ($collection as $item): ?>
+                <div class="item<?php
+                    if (!$active):
+                        echo ' active';
+                        $active = true;
+                    endif ?>">
+                    <img src="<?= $this->clean($item->getImage()) ?>" alt="<?= $this->clean($item->title) ?>"/>
+
+                    <div class="carousel-caption">
+                        <?= $this->clean($item->getFeatured()) ?>
+                    </div>
+                </div>
+            <?php endforeach ?>
+        </div>
+    </div>
+<?php endif ?>

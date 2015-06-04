@@ -1,0 +1,16 @@
+<h3>Testimonials:</h3>
+<?php if (count($collection)): ?>
+    <?php foreach ($collection as $item): ?>
+        <dl>
+            <dt><?= $this->clean($item->title) ?></dt>
+            <dt>
+                <small><?= $this->clean($item->name) ?></small>
+            </dt>
+            <dd><?= $this->clean((new \PHY\Variable\Str($item->content))->toShorten(256)) ?> <a
+                    href="<?= $this->url('testimonial/' . $item->id()) ?>" class="btn btn-xs btn-danger"><i
+                        class="glyphicon glyphicon-arrow-right"></i></a></dd>
+        </dl>
+    <?php endforeach ?>
+<?php else: ?>
+    No kind words yet.
+<?php endif ?>

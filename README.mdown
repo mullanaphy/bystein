@@ -1,0 +1,33 @@
+By Stein
+===============================================================================
+
+
+Source code for my friend's website, [By Stein](http://bystein.com/). This code
+base is open source however that is it. All actual content (images, text,
+intellectual properties) are all copyrighted by Chris Stein and cannot be used
+without explicit written consent.
+
+Requirements
+------------
+
+- PHP 5.4+
+- PHY\Markup
+- PHY\Variable
+
+Submitting bugs and feature requests
+------------------------------------
+
+Please send bugs to me via
+[GitHub](https://github.com/mullanaphy/bystein/issues)
+
+Author
+------
+
+John Mullanaphy - <john@jo.mu> - <http://jo.mu/>
+That's it for now...
+
+License
+-------
+
+Source code for By Stein is licensed under the Open Software License (OSL 3.0) -
+see the `LICENSE` file for details

@@ -1,0 +1,77 @@
+<?php
+    /**
+     * Phyneapple!
+     *
+     * LICENSE
+     *
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@phyneapple.com so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY\Phyneapple
+     * @copyright Copyright (c) 2013 Phyneapple! (http://www.phyneapple.com/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy <john@jo.mu>
+     *
+     * @var $this \PHY\View\Block
+     * @var $item \PHY\Model\Image
+     */
+?>
+<form action="<?= $_SERVER['REQUEST_URI'] ?>" class="form" method="post" enctype="multipart/form-data">
+    <?= $this->getXsrfIdField() ?>
+    <?= $this->child('message') ?>
+    <div class="row">
+        <div class="col-sm-6 col-lg-6">
+            <div class="form-group">
+                <label for="image-title" class="control-label">Title</label>
+                <input id="image-title" class="form-control" name="image[title]" type="text"
+                       value="<?= $this->clean($item->title) ?>"/>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-6">
+            <div class="form-group">
+                <label for="image-alt" class="control-label">Alt Text</label>
+                <input id="image-alt" class="form-control" name="image[alt]" type="text"
+                       value="<?= $this->clean($item->alt) ?>"/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 col-lg-6">
+            <div class="form-group">
+                <label for="image-title" class="control-label">Image<?php if ($item->file): ?>
+                        <small><em><a href="<?= $this->url('admin/imageThumbnail/id/' . $item->id()) ?>" class="">create
+                                thumbnail</a></em></small><?php endif ?></label>
+                <input id="image-title" class="form-control" name="file" type="file"/>
+                <?php if ($item->file): ?>
+                    <div class="thumbnail">
+                        <img src="<?= $item->thumbnail
+                            ?: $item->file ?>" class="img-responsive"/>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-6">
+            <div class="form-group">
+                <label for="gallery" class="control-label">Galleries</label>
+                <?php if ($galleries): ?>
+                    <select id="gallery" name="gallery[]" class="form-control" multiple="multiple" size="7">
+                        <?php foreach ($galleries as $gallery_id => $gallery): ?>
+                            <option
+                                value="<?= $gallery_id ?>"<?php if ($gallery->selected): ?> selected="selected"<?php endif ?>><?= $gallery->name ?></option>
+                        <?php endforeach ?>
+                    </select>
+                <?php endif ?>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="form-group">
+        <button class="btn btn-primary">Save</button>
+    </div>
+</form>

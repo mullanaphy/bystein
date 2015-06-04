@@ -1,0 +1,124 @@
+<?php
+    /**
+     * Phyneapple!
+     *
+     * LICENSE
+     *
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@phyneapple.com so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY\Phyneapple
+     * @copyright Copyright (c) 2013 Phyneapple! (http://www.phyneapple.com/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy <john@jo.mu>
+     *
+     * @var $this \PHY\View\Block
+     * @var $collection \PHY\Model\Image\Collection
+     */
+?>
+<?php $tag = $this->tag() ?>
+<?php $helper = $tag->helper() ?>
+<?= $this->child('message') ?>
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        window.onload = function() {
+            !function($) {
+                $.ajaxDispatcher('sorter', function(event) {
+                    event.type = $.ajaxDispatcher('default');
+                    var tr = $(event.caller.caller).parent().parent();
+                    event.callback = function(response) {
+                        if (response.direction === 'up') {
+                            tr.insertBefore(tr.prev());
+                        } else {
+                            tr.insertAfter(tr.next());
+                        }
+                        return false;
+                    };
+                    $('body').trigger(event);
+                });
+            }(jQuery);
+        };
+        /* ]]> */
+    </script>
+    <table class="table table-striped">
+        <colgroup>
+            <col width="5%"/>
+            <col/>
+            <col width="5%"/>
+            <col width="5%"/>
+            <col width="2.5%"/>
+            <col width="2.5%"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th></th>
+            <th>Title</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if (count($images)): ?>
+            <?php foreach ($images as $image): ?>
+                <tr class="image-<?= $image->id() ?>">
+                    <td class="image-<?= $image->id() ?>-name"><?php if ($image->file): ?><img
+                            src="<?= $this->clean($image->thumbnail
+                                ?: $image->file); ?>"
+                            alt="<?= $this->clean($image->alt) ?>" style="height:20px; width:20px;"/><?php endif ?></td>
+                    <td class="image-<?= $image->id() ?>-title"><?= $this->clean($image->title); ?></td>
+                    <td class="action"><?= $tag->helper()->url('Edit', '/admin/image/id/' . $image->id()) ?></td>
+                    <td class="action">
+                        <?=
+                            $helper->url('Remove', '/admin/galleryImage/gallery_id/' . $item->id() . '/image_id/' . $image->id() . '/remove', [
+                                'class' => 'ajax',
+                                'data' => [
+                                    'method' => 'delete',
+                                    'confirm' => 'remove',
+                                    'message' => 'Are you sure you want to remove ' . $this->clean($image->title) . ' from this gallery?',
+                                    'type' => 'confirm',
+                                    'element' => '.image-' . $image->id()
+                                ]
+                            ]) ?>
+                    </td>
+
+                    <td><?= $helper->url($tag->span->class([
+                            'glyphicon',
+                            'glyphicon-arrow-up'
+                        ]), '/admin/galleryImageSort/gallery_id/' . $item->id() . '/image_id/' . $image->id() . '/sort/up', [
+                            'class' => 'ajax',
+                            'data' => [
+                                'method' => 'post',
+                                'type' => 'sorter'
+                            ]
+                        ]) ?></td>
+                    <td><?= $helper->url($tag->span->class([
+                            'glyphicon',
+                            'glyphicon-arrow-down'
+                        ]), '/admin/galleryImageSort/id/gallery_id/' . $item->id() . '/image_id/' . $image->id() . '/sort/down', [
+                            'class' => 'ajax',
+                            'data' => [
+                                'method' => 'post',
+                                'type' => 'sorter'
+                            ]
+                        ]) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="4">No images have been added yet. <a
+                        href="<?= $this->url('admin/image/id/0?gallery_id=' . $item->id()) ?>"
+                        class="btn btn-sm btn-primary">Add</a>
+                </td>
+            </tr>
+        <?php endif ?>
+        </tbody>
+    </table>
+<?= $this->child('pagination') ?>

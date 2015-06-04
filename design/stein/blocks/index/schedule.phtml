@@ -1,0 +1,40 @@
+<?php $time = function ($time) {
+    $hoursFrom = explode('.', (string)$time);
+    if (count($hoursFrom) > 1) {
+        $minutesFrom = str_pad(round(60 * $hoursFrom[1] / 100), 2, '0');
+    } else {
+        $minutesFrom = '00';
+    }
+    $hoursFrom = $hoursFrom[0];
+    if ($hoursFrom >= 12) {
+        $from = ($hoursFrom > 12
+                ? $hoursFrom - 12
+                : $hoursFrom) . ':' . $minutesFrom . 'pm';
+    } else {
+        $from = (!$hoursFrom
+                ? 12
+                : $hoursFrom) . ':' . $minutesFrom . 'am';
+    }
+    return $from;
+} ?>
+<h3>Today:</h3>
+<?php if ($closing->exists()): ?>
+    <h4>Closed for <?= $this->clean($closing->title) ?></h4>
+    <?php if ($closing->reason): ?>
+        <?= $this->clean($closing->reason) ?>
+    <?php endif ?>
+<?php elseif (count($collection)): ?>
+    <div class="row">
+        <?php $i = true; ?>
+        <?php foreach ($collection as $item): ?>
+            <div class="col-lg-6">
+                <dl>
+                    <dt><?= $this->clean($item->title) ?></dt>
+                    <dd><?= $time($item->start) ?> - <?= $time($item->end + .25) ?></dd>
+                </dl>
+            </div>
+        <?php endforeach ?>
+    </div>
+<?php else: ?>
+    No classes today.
+<?php endif ?>

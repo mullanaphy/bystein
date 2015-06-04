@@ -1,0 +1,52 @@
+<h1>Hey <?= $user->name ?>!</h1>
+<p>Hope you're having a good day today. On the right side of this page is all the sections of this site you can edit. If
+    you end up having any problems, please contact John at <a href="mailto:john@jo.mu">john@jo.mu</a>.</p>
+<hr/>
+<div class="row">
+    <div class="col-sm-4 col-lg-4">
+        <h4>Settings:</h4>
+        <dl>
+            <dt>Email</dt>
+            <dd><?= $email ?></dd>
+        </dl>
+        <hr class="hidden-xs"/>
+        <a href="<?= $this->url('admin/config') ?>"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+    </div>
+    <div class="col-sm-4 col-lg-4">
+        <h4>Images:</h4>
+        <ul class="list-unstyled">
+            <?php if ($images->count()): ?>
+                <?php foreach ($images as $image): ?>
+                    <li>
+                        <?php if ($image->file): ?><img
+                            src="<?= $image->thumbnail
+                                ?: $image->file ?>" alt="<?= $image->alt ?>"
+                            style="height:20px; width:20px;" /> <?php endif ?><a
+                            href="<?= $this->url('admin/image/id/' . $image->id()) ?>"><?= $image->title ?></a>
+                    </li>
+                <?php endforeach ?>
+            <?php else: ?>
+                <li>No images added yet.</li>
+            <?php endif ?>
+        </ul>
+        <hr class="hidden-xs"/>
+        <a href="<?= $this->url('admin/image/id/0') ?>"><i class="glyphicon glyphicon-plus-sign"></i>
+            Image</a>
+    </div>
+    <div class="col-sm-4 col-lg-4">
+        <h4>Galleries:</h4>
+        <ul class="list-unstyled">
+            <?php if ($galleries->count()): ?>
+                <?php foreach ($galleries as $gallery): ?>
+                    <li><a href="<?= $this->url('admin/gallery/id/' . $gallery->id()) ?>"><?= $gallery->name ?>
+                        </a></li>
+                <?php endforeach ?>
+            <?php else: ?>
+                <li>No news posted yet.</li>
+            <?php endif ?>
+        </ul>
+        <hr class="hidden-xs"/>
+        <a href="<?= $this->url('admin/gallery/id/0') ?>"><i class="glyphicon glyphicon-plus-sign"></i> Gallery</a>
+    </div>
+</div>
+<hr class="visible-xs hidden-lg"/>

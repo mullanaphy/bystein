@@ -1,0 +1,8 @@
+<div class="page-header">
+    <h1><a href="<?= $this->url('admin') ?>">Admin
+            Panel</a> &raquo; <?php if (isset($item)): ?><a href="<?= $this->url('admin/gallery') ?>">
+                Galleries</a> &raquo; <?php if ($item->exists()): ?>Editing <?= $this->clean($item->title) ?><?php else: ?>New Gallery<?php endif ?><?php else: ?>Galleries
+        <a href="<?= $this->url('admin/gallery/id/0') ?>">
+                <small><i class="glyphicon glyphicon-plus-sign"></i></small></a><?php endif ?>
+    </h1>
+</div>

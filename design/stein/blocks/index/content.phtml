@@ -1,0 +1,106 @@
+<?php foreach ($galleries as $gallery): ?>
+    <?php $images = $galleryImages($gallery->id()); ?>
+    <?php if ($count = count($images)): ?>
+        <div class="row" style="margin:2em 0">
+            <div class="col-sm-10">
+                <div class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <div class="row">
+                                <?php for ($i = 0; $i < $count; ++$i): ?>
+                                    <?php if ($i > 24):
+                                        break;
+                                    endif ?>
+                                    <?php $image = $images[$i] ?>
+                                    <div class="col-sm-1">
+                                        <div class="thumbnail">
+                                            <a href="<?= $this->clean($image->getImage()) ?>"><img
+                                                    src="<?= $this->clean($image->getImage()) ?>" height="60"
+                                                    alt="<?= $this->clean($image->title) ?>"/></a>
+                                        </div>
+                                    </div>
+                                <?php endfor ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php if ($count > 3): ?>
+                <div class="col-sm-2">
+                    <img src="<?= $this->url('graphic.jpg', 'image') ?>" width="120"
+                         alt="<?= $this->clean($gallery->name) ?>"/>
+                    <!-- a href="#" class="less"
+                       data-gallery="<?= (int)$gallery->id() ?>">&laquo;
+                    </a>
+                    <a href="<?= $this->url('more/' . $gallery->id()) ?>" class="more"
+                       data-gallery="<?= (int)$gallery->id() ?>">&raquo;
+                    </a -->
+                </div>
+            <?php endif ?>
+        </div>
+    <?php endif ?>
+<?php endforeach ?>
+<div class=""><img
+        src="<?= $this->url('footer.png', 'image') ?>"
+        alt=""/></div>
+<script>
+    !function($) {
+        var running = false;
+        $('.more').each(function() {
+            var less = false;
+            var elementMore = $(this);
+            var completed = false;
+            var elementHolder = elementMore.parent().parent();
+            var elementCarousel = $('.carousel', elementHolder);
+            var started = false;
+            elementMore.on('click', function(event) {
+                started = true;
+                event.stopPropagation();
+                var url = this.href;
+                var func = function() {
+                    if (completed) {
+                        elementCarousel.carousel('next').carousel('pause');
+                        return;
+                    }
+                    less = true;
+                    running = true;
+                    var caller = elementMore.data('caller');
+                    caller = parseInt(caller || 0);
+                    ++caller;
+                    $.post(url, {_caller: caller})
+                        .done(function(res) {
+                            running = false;
+                            elementMore.data('caller', caller);
+                            $('.carousel-inner', elementCarousel).append(res.content);
+                            if (!res.more) {
+                                completed = true;
+                            }
+                            elementCarousel.carousel('next').carousel('pause');
+                        })
+                        .fail(function(res) {
+                            running = false;
+                        });
+                };
+                var run = function() {
+                    if (!running) {
+                        func();
+                    } else {
+                        setTimeout(run, 100);
+                    }
+                };
+                run();
+                return false;
+            });
+            var elementLess = elementMore.siblings('.less');
+            elementLess.on('click', function(event) {
+                event.stopPropagation();
+                if (!started) {
+                    return false;
+                }
+                elementCarousel.carousel('prev').carousel('pause');
+                console.log('LESS!');
+                return false;
+            });
+        });
+    }(jQuery);
+</script>

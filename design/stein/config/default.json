@@ -1,0 +1,59 @@
+{
+  "layout": {
+    "template": "core/layout-2col.phtml",
+    "children": {
+      "head": {
+        "title": "By Stein",
+        "viewClass": "head",
+        "files": {
+          "css": [
+            "bootstrap.min.css",
+            "core.css"
+          ]
+        }
+      },
+      "header": {
+        "template": "core/sections/header.phtml",
+        "title": "By Stein",
+        "children": {
+          "menu": {
+            "viewClass": "header/menu",
+            "links": {
+              "resume": {
+                "title": "Résumé",
+                "url": "/chris-stein-resume.pdf"
+              },
+              "contact": {
+                "title": "Contact",
+                "url": "contact",
+                "attributes": {
+                  "a": {
+                    "data": {
+                      "target": "#modal-contact",
+                      "toggle": "modal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "footer": {
+        "viewClass": "footer",
+        "copyright": "&copy; By Stein 2015",
+        "files": {
+          "js": [
+            "bootstrap.min.js"
+          ]
+        }
+      },
+      "content": {
+        "viewClass": "parser"
+      },
+      "modal": {
+        "template": "generic/modal.phtml"
+      }
+    }
+  }
+}

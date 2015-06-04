@@ -1,0 +1,8 @@
+<div class="page-header">
+    <h1><a href="<?= $this->url('admin') ?>">Admin
+            Panel</a> &raquo; <?php if (isset($item)): ?><a href="<?= $this->url('admin/authorize') ?>">Access Control
+            List</a> &raquo; <?php if ($item->exists()): ?>Editing <?= $this->clean($item->request) ?><?php else: ?>New ACL<?php endif ?><?php else: ?>Access Control List
+        <a href="<?= $this->url('admin/authorize/id/0') ?>">
+                <small><i class="glyphicon glyphicon-plus-sign"></i></small></a><?php endif ?>
+    </h1>
+</div>

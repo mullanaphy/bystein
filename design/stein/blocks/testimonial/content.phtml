@@ -1,0 +1,27 @@
+<div class="page-header">
+    <h1>Testimonials</h1>
+</div>
+<?php if ($collection->count()): ?>
+    <div class="row">
+        <?php foreach ($collection as $item): ?>
+            <div class="col-sm-4 col-lg-4">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <dl>
+                            <dt><?= $this->clean($item->title) ?></dt>
+                            <dt>
+                                <small><?= $this->clean($item->name) ?></small>
+                            </dt>
+                            <dd><?= $this->clean((new \PHY\Variable\Str($item->content))->toShorten(256)) ?> <a
+                                    href="<?= $this->url('testimonial/' . $item->id()) ?>"
+                                    class="btn btn-xs btn-danger"><i
+                                        class="glyphicon glyphicon-arrow-right"></i></a></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach ?>
+    </div>
+<?php else: ?>
+    <p>No testimonials are listed yet. Hold on while we get them in.</p>
+<?php endif ?>

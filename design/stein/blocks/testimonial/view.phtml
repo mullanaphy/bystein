@@ -1,0 +1,14 @@
+<div class="page-header">
+    <h1>
+        <a href="<?= $this->url('testimonial') ?>">Testimonials</a> &raquo; <?= $this->clean($item->name) ?>
+    </h1>
+</div>
+<h3><?= $this->clean($item->title) ?></h3>
+<?= nl2br($this->clean($item->content)) ?>
+<br />
+<small>- <?php if ($item->url): ?>
+        <a href="<?= $item->url ?>"><?= $this->clean($item->name) ?></a>
+    <?php else: ?>
+        <?= $this->clean($item->name) ?>
+    <?php endif ?>
+</small>
