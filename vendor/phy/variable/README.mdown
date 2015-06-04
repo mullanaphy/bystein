@@ -1,0 +1,91 @@
+PHY\Variable - Small variable library experiment for PHP 5.4+
+================================================================================
+
+
+PHY\Variable is a small library to address some people's complaints about PHP
+language problems (which I agree with). In particular, the odd parameter order
+of different functions due to the underlying libraries that they use. This is
+just a test to standardize all the core variables into objects.
+
+NOT RECOMMEND FOR PRODUCTION. Or anything else really, again, it's just me
+putzing around.
+
+Usage
+-----
+
+```php
+<?php
+
+use PHY\Variable\Obj;
+use PHY\Variable\Str;
+
+/*
+ * This is probably the few things that's actually helpful. Although this
+ * example is bad since you can have json_decode return an associated array
+ * anyways... You can also do the reverse of this (recursive: array => object).
+ */
+$object = new Obj(json_decode('{"something":"else"}'));
+$primativeArray = $object->toArray();
+
+/*
+ * Some of the chaining isn't totally useless, especially if you're manipulating
+ * a string or array.
+ */
+$randomString = Str::random(16);
+$randomString->chain()
+    ->pad(20, '_', STR_PAD_BOTH)
+    ->split(0, 14)
+    ->shuffle();
+echo $randomString;
+
+/*
+ * Stupid password encryption (WARNING, IF YOU DO THIS YOU'RE AN IDIOT).
+ */
+$password = new Str('password');
+echo $password->rot13();
+```
+
+
+About
+-----
+
+People justifiably complain about PHP's awkward parameter order and lack of
+doing some sweet crap to primitive variables. This doesn't allow you to do that
+but it at least gets you started with that task by wrapping primitives into
+objects. Truthfully though, the best answer is just to have a good IDE while PHP
+continues to work on those issues.
+
+Requirements
+------------
+
+- PHP 5.4+
+
+Submitting bugs and feature requests
+------------------------------------
+
+Please send bugs to me via
+[GitHub](https://github.com/mullanaphy/variable/issues)
+
+Author
+------
+
+John Mullanaphy - <john@jo.mu> - <http://jo.mu/>
+That's it for now...
+
+License
+-------
+
+PHY\Variable is licensed under the DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE -
+see the `LICENSE` file for details
+
+Acknowledgements
+----------------
+
+People on reddit and also on sites that make quasi decent digs at PHP.
+
+TODO
+----
+
+Actually create tests... Sorry, this is pretty old and written before I used to
+write tests. Also, add more core PHP functions to the objects to hopefully cover
+all of PHP's primitive variable functions.
