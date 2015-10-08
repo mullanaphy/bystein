@@ -1,18 +1,19 @@
+<?= $this->child('jumbotron') ?>
 <?php foreach ($galleries as $gallery): ?>
     <?php $images = $galleryImages($gallery->id()); ?>
     <?php if ($count = count($images)): ?>
         <div class="row" style="margin:2em 0">
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 <div class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner">
                         <div class="item active">
                             <div class="row">
                                 <?php for ($i = 0; $i < $count; ++$i): ?>
-                                    <?php if ($i > 24):
+                                    <?php if ($i > 11):
                                         break;
                                     endif ?>
                                     <?php $image = $images[$i] ?>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <div class="thumbnail">
                                             <a href="<?= $this->clean($image->getImage()) ?>"><img
                                                     src="<?= $this->clean($image->getImage()) ?>" height="60"
@@ -26,9 +27,15 @@
                 </div>
             </div>
             <?php if ($count > 3): ?>
-                <div class="col-sm-2">
-                    <img src="<?= $this->url('graphic.jpg', 'image') ?>" width="120"
-                         alt="<?= $this->clean($gallery->name) ?>"/>
+                <div class="col-sm-3">
+                    <div class="hover" style="position:relative">
+                        <img class="hover-img" src="<?= $this->url($gallery->url . '.jpg', 'image') ?>"
+                             alt="<?= $this->clean($gallery->name) ?>"/>
+                        <img class="hover-up" src="<?= $this->url('hover-up.png', 'image') ?>"
+                             style="position:absolute;top:0;left:0;pointer-events:none;display:none;"/>
+                        <img class="hover-down" src="<?= $this->url('hover-down.png', 'image') ?>"
+                             style="position:absolute;top:0;left:0;pointer-events:none;display:none;"/>
+                    </div>
                     <!-- a href="#" class="less"
                        data-gallery="<?= (int)$gallery->id() ?>">&laquo;
                     </a>
@@ -46,14 +53,31 @@
 <script>
     !function($) {
         var running = false;
-        $('.more').each(function() {
+        var loc = function(element, offsetTop) {
+            var onDirection;
+            var offDirection;
+            var offset = e.pageY - offsetTop - element.offset().top;
+            var half = element.height() / 2;
+            if (offset > half) {
+                return {
+                    on: 'up',
+                    off: 'down'
+                };
+            }
+            return {
+                on: 'down',
+                off: 'up'
+            };
+        };
+        $('.hover').each(function() {
             var less = false;
-            var elementMore = $(this);
+
+            var element = $(this);
             var completed = false;
-            var elementHolder = elementMore.parent().parent();
+            var elementHolder = element.parent().parent();
             var elementCarousel = $('.carousel', elementHolder);
             var started = false;
-            elementMore.on('click', function(event) {
+            element.on('click', function(event) {
                 started = true;
                 event.stopPropagation();
                 var url = this.href;
@@ -64,13 +88,13 @@
                     }
                     less = true;
                     running = true;
-                    var caller = elementMore.data('caller');
+                    var caller = element.data('caller');
                     caller = parseInt(caller || 0);
                     ++caller;
                     $.post(url, {_caller: caller})
                         .done(function(res) {
                             running = false;
-                            elementMore.data('caller', caller);
+                            element.data('caller', caller);
                             $('.carousel-inner', elementCarousel).append(res.content);
                             if (!res.more) {
                                 completed = true;
@@ -91,7 +115,7 @@
                 run();
                 return false;
             });
-            var elementLess = elementMore.siblings('.less');
+            var elementLess = element.siblings('.less');
             elementLess.on('click', function(event) {
                 event.stopPropagation();
                 if (!started) {
@@ -100,6 +124,27 @@
                 elementCarousel.carousel('prev').carousel('pause');
                 console.log('LESS!');
                 return false;
+            });
+
+            var item = $(this);
+            item.on('mouseenter mousemove', '.hover-img', function(e) {
+                var locations = loc($(this), this.offsetTop);
+                $('.hover-' + locations.on, item).show();
+                $('.hover-' + locations.off, item).hide();
+            }).on('mouseleave', '.hover-img', function(e) {
+                $('.hover-up,.hover-down', item).hide();
+            }).on('click', '.hover-img', function() {
+                var locations = loc($(this), this.offsetTop);
+                event.stopPropagation();
+                if (!started) {
+                    return false;
+                }
+                if (locations.on === 'up') {
+                }
+                elementCarousel.carousel('prev').carousel('pause');
+                console.log('LESS!');
+                return false;
+
             });
         });
     }(jQuery);

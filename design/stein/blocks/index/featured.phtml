@@ -12,10 +12,10 @@
         <div class="carousel-inner">
             <?php foreach ($collection as $item): ?>
                 <div class="item<?php
-                    if (!$active):
-                        echo ' active';
-                        $active = true;
-                    endif ?>">
+                if (!$active):
+                    echo ' active';
+                    $active = true;
+                endif ?>">
                     <img src="<?= $this->clean($item->getImage()) ?>" alt="<?= $this->clean($item->title) ?>"/>
 
                     <div class="carousel-caption">

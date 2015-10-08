@@ -12,7 +12,7 @@ body {
     margin: 0 0 1em;
 }
 
-.chip-bg img {
+.caro img {
     height: 500px !important;
     width: 1140px !important;
 }
@@ -28,4 +28,8 @@ body {
 
 .navbar {
 
+}
+
+#carousel-featured img {
+    height: 500px;
 }

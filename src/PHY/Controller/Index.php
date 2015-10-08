@@ -58,6 +58,7 @@
             $body->setTemplate('core/layout-1col.phtml');
 
             $collection = $manager->getCollection('Gallery');
+            $collection->order()->by('sort');
             $content = $layout->block('content');
             $content->setVariable('galleries', $collection);
             $content->setVariable('galleryImages', function ($id) use ($database, $manager) {
@@ -78,7 +79,6 @@
                     }
                 }
                 return $rows;
-                return $images;
             });
 
             /* @var \MySQLi_STMT $query */
@@ -106,7 +106,7 @@
                 }
             } while ($database->more_results() && $database->next_result());
 
-            $body->setChild('jumbotron', [
+            $content->setChild('jumbotron', [
                 'template' => 'index/featured.phtml',
                 'collection' => $collection
             ]);
