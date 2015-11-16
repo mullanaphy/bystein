@@ -10,12 +10,12 @@
      * If you did not receive a copy of the license and are unable to
      * obtain it through the world-wide-web, please send an email
      * to license@phyneapple.com so we can send you a copy immediately.
-
      */
 
     namespace PHY\Controller;
 
     use PHY\Model\Config as ConfigModel;
+    use PHY\Model\Gallery\Linked;
     use PHY\Model\Image;
     use PHY\Model\User;
 
@@ -67,16 +67,10 @@
                     FROM `gallery_linked` l
                         INNER JOIN `image` i ON (l.`image_id` = i.`id`)
                     WHERE l.`gallery_id` = " . (int)$id . "
-                    LIMIT 6");
-                $images = [];
-                while ($row = $prepare->fetch_assoc()) {
-                    $images[] = new Image($row);
-                }
+                    LIMIT 12");
                 $rows = [];
-                if ($images) {
-                    for ($i = 0; $i < 24; ++$i) {
-                        $rows[] = $images[0];
-                    }
+                while ($row = $prepare->fetch_assoc()) {
+                    $rows[] = new Image($row);
                 }
                 return $rows;
             });
@@ -110,6 +104,61 @@
                 'template' => 'index/featured.phtml',
                 'collection' => $collection
             ]);
+        }
+
+        /**
+         * GET /import
+         */
+        public function import_get()
+        {
+            var_dump('hi');
+            $app = $this->getApp();
+
+            /* @var \PHY\Database\IDatabase $database */
+            $database = $app->get('database');
+            $manager = $database->getManager();
+
+            $description = $manager->load(['key' => 'meta_description'], new ConfigModel);
+
+            $layout = $this->getLayout();
+
+            $head = $layout->block('head');
+            $head->setVariable('title', 'Art of Chris Stein');
+            $head->setVariable('description', 'Importing shit');
+
+            /**
+             * @var \PHY\View\AView $body
+             */
+            $body = $layout->block('layout');
+            $body->setTemplate('core/layout-1col.phtml');
+
+            $legacyDatabase = $app->get('database/legacy');
+
+            $from = '/var/www/com/bystein/www/public/';
+            $to = '/media/uploaded/image/';
+            /** @var \Mysqli_Result $prepare */
+            $prepare = $legacyDatabase->query("SELECT *
+                FROM `csa_gallery`
+                WHERE (`type`=1 AND `sub_type` IN (1, 3, 4)) OR `type` = 2;");
+            while ($row = $prepare->fetch_assoc()) {
+                echo($row);
+                exit;
+                $image = new Image([
+                    'title' => $row['title'],
+                    'alt' => $row['title'],
+                    'file' => $to . $row['file'],
+                    'thumbnail' => $to . 'thumbnail/' . $row['thumbnail'],
+                ]);
+                copy($from . 't/' . $row['thumbnail'], $to . $row['thumbnail']);
+                copy($from . 'i/' . $row['file'], $to . 'thumbnail/' . $row['file']);
+                $manager->save($image);
+                $link = new Linked([
+                    'image_id' => $image->id(),
+                    'gallery_id' => $row['type'],
+                ]);
+                $manager->save($link);
+            }
+
         }
 
     }

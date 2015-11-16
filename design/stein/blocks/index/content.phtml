@@ -26,24 +26,16 @@
                     </div>
                 </div>
             </div>
-            <?php if ($count > 3): ?>
-                <div class="col-sm-3">
-                    <div class="hover" style="position:relative">
-                        <img class="hover-img" src="<?= $this->url($gallery->url . '.jpg', 'image') ?>"
-                             alt="<?= $this->clean($gallery->name) ?>"/>
-                        <img class="hover-up" src="<?= $this->url('hover-up.png', 'image') ?>"
-                             style="position:absolute;top:0;left:0;pointer-events:none;display:none;"/>
-                        <img class="hover-down" src="<?= $this->url('hover-down.png', 'image') ?>"
-                             style="position:absolute;top:0;left:0;pointer-events:none;display:none;"/>
-                    </div>
-                    <!-- a href="#" class="less"
-                       data-gallery="<?= (int)$gallery->id() ?>">&laquo;
-                    </a>
-                    <a href="<?= $this->url('more/' . $gallery->id()) ?>" class="more"
-                       data-gallery="<?= (int)$gallery->id() ?>">&raquo;
-                    </a -->
+            <div class="col-sm-3">
+                <div class="hover" data-gallery="<?= (int)$gallery->id() ?>" data-more="<?= $count > 12
+                    ? 1
+                    : 0 ?>" style="position:relative">
+                    <img class="hover-img" src="<?= $this->url($gallery->url . '.jpg', 'image') ?>"
+                         alt="<?= $this->clean($gallery->name) ?>"/>
+                    <img class="hover-up" src="<?= $this->url('hover-up.png', 'image') ?>"/>
+                    <img class="hover-down" src="<?= $this->url('hover-down.png', 'image') ?>"/>
                 </div>
-            <?php endif ?>
+            </div>
         </div>
     <?php endif ?>
 <?php endforeach ?>
@@ -53,98 +45,110 @@
 <script>
     !function($) {
         var running = false;
-        var loc = function(element, offsetTop) {
-            var onDirection;
-            var offDirection;
-            var offset = e.pageY - offsetTop - element.offset().top;
-            var half = element.height() / 2;
-            if (offset > half) {
+        var loc = function(element, event) {
+            var $element = $(element);
+            var offsetTop = event.pageY - element.offsetTop - $element.offset().top;
+            var offsetLeft = event.pageX - element.offsetLeft - $element.offset().left;
+            var half = $element.height() / 2;
+            if (offsetLeft < 148) {
+                return false;
+            }
+            if (offsetTop > half) {
                 return {
-                    on: 'up',
-                    off: 'down'
+                    off: 'up',
+                    on: 'down'
                 };
             }
             return {
-                on: 'down',
-                off: 'up'
+                off: 'down',
+                on: 'up'
             };
         };
         $('.hover').each(function() {
             var less = false;
-
             var element = $(this);
             var completed = false;
             var elementHolder = element.parent().parent();
             var elementCarousel = $('.carousel', elementHolder);
             var started = false;
-            element.on('click', function(event) {
-                started = true;
-                event.stopPropagation();
-                var url = this.href;
-                var func = function() {
-                    if (completed) {
+            var $element = $(this);
+
+            var galleryId = $element.data('gallery');
+            var getMore = function() {
+                if (completed) {
+                    elementCarousel.carousel('next').carousel('pause');
+                    started = false;
+                    return;
+                }
+                less = true;
+                running = true;
+                var caller = element.data('caller');
+                var more = element.data('more');
+                if (!more) {
+                    completed = true;
+                    started = false;
+                    return;
+                }
+                caller = parseInt(caller || 0);
+                ++caller;
+                $.post('<?= $this->url('more') ?>', {galleryId: galleryId, _caller: caller})
+                    .done(function(res) {
+                        running = false;
+                        element.data('caller', caller);
+                        if (!res.content) {
+                            completed = true;
+                            started = false;
+                            return;
+                        }
+                        $('.carousel-inner', elementCarousel).append(res.content);
+                        if (!res.more) {
+                            completed = true;
+                        }
                         elementCarousel.carousel('next').carousel('pause');
-                        return;
-                    }
-                    less = true;
-                    running = true;
-                    var caller = element.data('caller');
-                    caller = parseInt(caller || 0);
-                    ++caller;
-                    $.post(url, {_caller: caller})
-                        .done(function(res) {
-                            running = false;
-                            element.data('caller', caller);
-                            $('.carousel-inner', elementCarousel).append(res.content);
-                            if (!res.more) {
-                                completed = true;
-                            }
-                            elementCarousel.carousel('next').carousel('pause');
-                        })
-                        .fail(function(res) {
-                            running = false;
-                        });
-                };
-                var run = function() {
-                    if (!running) {
-                        func();
-                    } else {
-                        setTimeout(run, 100);
-                    }
-                };
-                run();
-                return false;
-            });
-            var elementLess = element.siblings('.less');
-            elementLess.on('click', function(event) {
-                event.stopPropagation();
-                if (!started) {
+                        started = false;
+                    })
+                    .fail(function(res) {
+                        running = false;
+                        started = false;
+                    });
+            };
+
+            $element.on('mouseenter mousemove', '.hover-img', function(e) {
+                var locations = loc(this, e);
+                if (!locations) {
                     return false;
                 }
-                elementCarousel.carousel('prev').carousel('pause');
-                console.log('LESS!');
-                return false;
-            });
-
-            var item = $(this);
-            item.on('mouseenter mousemove', '.hover-img', function(e) {
-                var locations = loc($(this), this.offsetTop);
-                $('.hover-' + locations.on, item).show();
-                $('.hover-' + locations.off, item).hide();
+                $('.hover-' + locations.on, $element).show();
+                $('.hover-' + locations.off, $element).hide();
             }).on('mouseleave', '.hover-img', function(e) {
-                $('.hover-up,.hover-down', item).hide();
-            }).on('click', '.hover-img', function() {
-                var locations = loc($(this), this.offsetTop);
-                event.stopPropagation();
-                if (!started) {
+                $('.hover-up,.hover-down', $element).hide();
+            }).on('click', '.hover-img', function(e) {
+                var locations = loc(this, e);
+                if (!locations) {
                     return false;
                 }
-                if (locations.on === 'up') {
+                event.stopPropagation();
+                if (started) {
+                    return false;
                 }
-                elementCarousel.carousel('prev').carousel('pause');
-                console.log('LESS!');
-                return false;
 
+                started = true;
+                if (locations.on === 'up') {
+                    var run = function() {
+                        if (!running) {
+                            getMore();
+                        } else {
+                            setTimeout(run, 100);
+                        }
+                    };
+                    run();
+                    return false;
+                }
+                if (less) {
+                    elementCarousel.carousel('prev').carousel('pause');
+                    started = false;
+                }
+                return false;
             });
         });
     }(jQuery);

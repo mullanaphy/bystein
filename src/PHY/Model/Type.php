@@ -10,42 +10,34 @@
      * If you did not receive a copy of the license and are unable to
      * obtain it through the world-wide-web, please send an email
      * to license@phyneapple.com so we can send you a copy immediately.
-
      */
 
-    namespace PHY\Model\Gallery;
-
-    use PHY\Model\Entity;
+    namespace PHY\Model;
 
     /**
-     * Gallery Linked model so we can organize images.
+     * Type model so we can filter images.
      *
-     * @package PHY\Model\Gallery\Linked
+     * @package PHY\Model\Type
      * @category PHY\Phyneapple
      * @copyright Copyright (c) 2013 Phyneapple! (http://www.phyneapple.com/)
      * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
      * @author John Mullanaphy <john@jo.mu>
      */
-    class Linked extends Entity
+    class Type extends Entity
     {
 
         protected static $_source = [
+            'cacheable' => true,
             'schema' => [
                 'primary' => [
-                    'table' => 'gallery_linked',
+                    'table' => 'gallery',
                     'columns' => [
-                        'gallery_id' => 'id',
-                        'image_id' => 'id',
-                        'type_id' => 'id',
+                        'name' => 'variable',
+                        'url' => 'variable',
                         'sort' => 'int',
-                    ],
-                    'keys' => [
-                        'local' => [
-                            'key' => 'UNIQUE INDEX (`gallery_id`, `image_id`, `type_id`)',
-                        ]
+                        'thumbnail' => 'int',
                     ]
                 ]
             ]
         ];
-
     }

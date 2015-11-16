@@ -33,3 +33,12 @@ body {
 #carousel-featured img {
     height: 500px;
 }
+
+.hover-up, .hover-down {
+    cursor: pointer;
+    display: none;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+}
