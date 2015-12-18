@@ -1,0 +1,71 @@
+<?php
+    /**
+     * Phyneapple!
+     *
+     * LICENSE
+     *
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@phyneapple.com so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY\Phyneapple
+     * @copyright Copyright (c) 2013 Phyneapple! (http://www.phyneapple.com/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy <john@jo.mu>
+     *
+     * @var $this \PHY\View\Block
+     * @var $item \PHY\Model\Image
+     */
+?>
+<form action="<?= $_SERVER['REQUEST_URI'] ?>" class="form" method="post" enctype="multipart/form-data">
+    <?= $this->getXsrfIdField() ?>
+    <?= $this->child('message') ?>
+    <input id="x" name="crop[x]" type="hidden" value=""/>
+    <input id="y" name="crop[y]" type="hidden" value=""/>
+    <input id="width" name="crop[width]" type="hidden" value=""/>
+    <input id="height" name="crop[height]" type="hidden" value=""/>
+
+    <div class="row">
+        <div class="col-sm-11">
+            <div class="thumbnail">
+                <img src="<?= $item->file ?>" id="cropper"/>
+            </div>
+        </div>
+        <div class="col-sm-1">
+            <div class="thumbnail">
+                <img src="<?= $item->thumbnail ?>"/>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="form-group">
+        <button class="btn btn-primary">Crop</button>
+    </div>
+</form>
+<script src="<?= $this->url('plugin/jcrop.min.js', 'js') ?>" type="text/javascript"></script>
+<script type="text/javascript">
+    !function($) {
+        $(function() {
+            var $x = $('#x');
+            var $y = $('#y');
+            var $width = $('#width');
+            var $height = $('#height');
+            var update = function(cropper) {
+                $x.val(cropper.x);
+                $y.val(cropper.y);
+                $width.val(cropper.w);
+                $height.val(cropper.h);
+            };
+            $('#cropper').Jcrop({
+                onChange: update,
+                onSelect: update,
+                aspectRatio: 0.77
+            });
+        });
+    }(jQuery);
+</script>

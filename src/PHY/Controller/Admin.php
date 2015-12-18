@@ -1396,7 +1396,112 @@
             ]);
         }
 
-        private function renderResponse($action, $message)
+        public function imageCrop_post()
+        {
+            $request = $this->getRequest();
+            $id = (int)$request->get('id', 0);
+
+            if (!$id) {
+                return $this->renderResponse('imageCrop', [
+                    'type' => 'warning'
+                ]);
+            }
+
+            $app = $this->getApp();
+            $request = $this->getRequest();
+
+            $cropper = $request->get('crop', []);
+
+            /**
+             * @var \PHY\Database\IDatabase $database
+             */
+            $database = $app->get('database');
+            $manager = $database->getManager();
+
+            $item = $manager->load($id, new Image);
+
+            if (!$item->exists() || $item->deleted) {
+                return $this->renderResponse('imageCrop', [
+                    'title' => 'Image Not Found!',
+                    'type' => 'warning',
+                    'message' => 'No image found for id: ' . $id
+                ]);
+            }
+
+            $file = $item->file;
+            $file = explode('.', $file);
+            $file[count($file) - 1] = 't-' . time() . $file[count($file) - 1];
+            $file = implode('.', $file);
+
+            $path = $this->getApp()->getPath()->getRoutes()['public'];
+            $image = imagecreatefromjpeg($path . $item->file);
+            $thumbnail = imagecreatetruecolor(80, 160);
+            imagecopyresampled($thumbnail, $image, 0, 0, (float)$cropper['x'], (float)$cropper['y'], 80, 160, (float)$cropper['width'], (float)$cropper['height']);
+            imagejpeg($thumbnail, $path . $file, 90);
+            $item->set('thumbnail', $file);
+            $manager->save($item);
+
+            return $this->renderResponse('imageCrop', [
+                'title' => 'Thumbnail created',
+                'type' => 'success',
+                'message' => 'Successfully cropped: ' . $item->id()
+            ], '/admin/imageCrop/id/' . $item->id());
+        }
+
+        public function imageCrop_get()
+        {
+            $app = $this->getApp();
+            $request = $this->getRequest();
+            $id = $request->get('id', false);
+
+            if (!$id) {
+                return $this->renderResponse('image', [
+                    'title' => 'Image Not Found!',
+                    'type' => 'warning',
+                    'message' => 'No image found for id: ' . $id
+                ]);
+            }
+
+            $layout = $this->getLayout();
+
+            $head = $layout->block('head');
+            $files = $head->getVariable('files');
+            $files['css'][] = 'jcrop.min.css';
+            $head->setVariable('files', $files);
+
+            $content = $layout->block('content');
+
+            /**
+             * @var \PHY\Database\IDatabase $database
+             */
+            $database = $app->get('database');
+            $manager = $database->getManager();
+
+            $item = $manager->load($id, new Image);
+
+            if (!$item->exists() || $item->deleted) {
+                return $this->renderResponse('image', [
+                    'title' => 'Image never existed...',
+                    'type' => 'warning',
+                    'message' => 'No config found for id: ' . $id
+                ]);
+            }
+
+            $content->setTemplate('admin/image/crop.phtml');
+            $content->setVariable('item', $item);
+
+            $breadcrumb = $layout->block('breadcrumb');
+            $breadcrumb->setTemplate('admin/image/crop/breadcrumb.phtml');
+            $breadcrumb->setVariable('item', $item);
+
+            if ($message = $app->get('session/admin/imageCrop/message')) {
+                $app->delete('session/admin/imageCrop/message');
+                $message['template'] = 'generic/message.phtml';
+                $content->setChild('message', $message);
+            }
+        }
+
+        private function renderResponse($action, $message, $redirect = '')
         {
             $accept = $this->getRequest()->getHeader('Accept', 'text/html;');
             if ($accept) {
@@ -1409,6 +1514,9 @@
                             $this->getResponse()->setStatusCode($message['type'] === 'success'
                                 ? 200
                                 : 500);
+                            if ($redirect) {
+                                return $this->redirect($redirect);
+                            }
                             return $this->redirect('/admin/' . $action);
                             break;
                         case 'application/json':
@@ -1441,6 +1549,10 @@
             $this->getResponse()->setStatusCode($message['type'] === 'success'
                 ? 200
                 : 500);
+
+            if ($redirect) {
+                return $this->redirect($redirect);
+            }
             return $this->redirect('/admin/' . $action);
         }
 

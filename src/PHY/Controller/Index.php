@@ -111,7 +111,6 @@
          */
         public function import_get()
         {
-            var_dump('hi');
             $app = $this->getApp();
 
             /* @var \PHY\Database\IDatabase $database */
@@ -141,8 +140,6 @@
                 FROM `csa_gallery`
                 WHERE (`type`=1 AND `sub_type` IN (1, 3, 4)) OR `type` = 2;");
             while ($row = $prepare->fetch_assoc()) {
-                echo($row);
-                exit;
                 $image = new Image([
                     'title' => $row['title'],
                     'alt' => $row['title'],

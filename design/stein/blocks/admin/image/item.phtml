@@ -45,15 +45,16 @@
         <div class="col-sm-6 col-lg-6">
             <div class="form-group">
                 <label for="image-title" class="control-label">Image<?php if ($item->file): ?>
-                        <small><em><a href="<?= $this->url('admin/imageThumbnail/id/' . $item->id()) ?>" class="">create
+                        <small><em><a href="<?= $this->url('admin/imageCrop/id/' . $item->id()) ?>"
+                                      class="btn btn-sm btn-success">create
                                 thumbnail</a></em></small><?php endif ?></label>
                 <input id="image-title" class="form-control" name="file" type="file"/>
-                <?php if ($item->file): ?>
-                    <div class="thumbnail">
-                        <img src="<?= $item->thumbnail
-                            ?: $item->file ?>" class="img-responsive"/>
-                    </div>
-                <?php endif; ?>
+                <div class="thumbnail">
+                    <img src="<?= $item->file ?>" class="img-responsive"/>
+                </div>
+                <div class="thumbnail">
+                    <img src="<?= $item->thumbnail ?>" class="img-responsive"/>
+                </div>
             </div>
         </div>
         <div class="col-sm-6 col-lg-6">
