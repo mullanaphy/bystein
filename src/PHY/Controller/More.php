@@ -65,7 +65,6 @@
                     'alt' => $image->title
                 ]), ['href' => $image->getImage()]), ['class' => 'thumbnail']), ['class' => 'col-sm-2']);
             }
-
             if (!$rows) {
                 echo json_encode(['content' => false, 'more' => false]);
                 exit;
@@ -74,7 +73,7 @@
             $more = false;
             if (count($rows) > $limit) {
                 $more = true;
-                array_splice($rows, 0, $limit);
+                array_pop($rows);
             }
 
             header('Content-Type: application/json');

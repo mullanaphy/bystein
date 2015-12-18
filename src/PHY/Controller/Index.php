@@ -67,7 +67,7 @@
                     FROM `gallery_linked` l
                         INNER JOIN `image` i ON (l.`image_id` = i.`id`)
                     WHERE l.`gallery_id` = " . (int)$id . "
-                    LIMIT 12");
+                    LIMIT 13");
                 $rows = [];
                 while ($row = $prepare->fetch_assoc()) {
                     $rows[] = new Image($row);
@@ -143,11 +143,23 @@
                 $image = new Image([
                     'title' => $row['title'],
                     'alt' => $row['title'],
-                    'file' => $to . $row['file'],
-                    'thumbnail' => $to . 'thumbnail/' . $row['thumbnail'],
+                    'file' => '/media/uploaded/image/' . $row['source'],
+                    'thumbnail' => '/media/uploaded/thumbnail/' . $row['thumbnail'],
                 ]);
-                copy($from . 't/' . $row['thumbnail'], $to . $row['thumbnail']);
-                copy($from . 'i/' . $row['file'], $to . 'thumbnail/' . $row['file']);
+
+                if (file_exists($to . 'image/' . $row['source'])) {
+                    @unlink($to . 'image/' . $row['source']);
+                }
+                if (file_exists($to . 'thumbnail/' . $row['thumbnail'])) {
+                    @unlink($to . 'thumbnail/' . $row['thumbnail']);
+                }
+
+                if (file_exists($from . 't/' . $row['thumbnail'])) {
+                    copy($from . 't/' . $row['thumbnail'], $to . 'thumbnail/' . $row['source']);
+                } else {
+                    copy($from . 't/' . $row['source'], $to . 'thumbnail/' . $row['source']);
+                }
+                copy($from . 'i/' . $row['source'], $to . 'image/' . $row['source']);
                 $manager->save($image);
                 $link = new Linked([
                     'image_id' => $image->id(),
