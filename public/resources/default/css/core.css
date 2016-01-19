@@ -56,3 +56,9 @@ body {
     background: #7572dd;
     color: #020047;
 }
+
+.row-bg {
+    background: rgba(255, 0, 0, 0.35);
+    margin: 2em 0;
+    padding: 1em 0 0;
+}
