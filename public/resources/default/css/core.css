@@ -42,3 +42,17 @@ body {
     position: absolute;
     top: 0;
 }
+
+#header {
+    background: #020047;
+    border-bottom: solid 1px #7572dd;
+}
+
+#header a:link, #header a:visited {
+    color: #7572dd;
+}
+
+#header a:active, #header a:hover {
+    background: #7572dd;
+    color: #020047;
+}
