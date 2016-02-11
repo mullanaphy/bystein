@@ -1173,12 +1173,14 @@
                 $images[] = new Image($row);
             }
 
-            $prepare = $database->query("SELECT i.*
+            $prepare = $database->query("SELECT COUNT(l.*) AS count
                 FROM `gallery_linked` l
-                    INNER JOIN `image` i ON (l.`image_id` = i.`id`)
-                WHERE l.`gallery_id` = " . (int)$id . " LIMIT " . $offset . " ," . $limit);
+                WHERE l.`gallery_id` = " . (int)$id . " LIMIT 1");
 
-            $imageCount = current($prepare->fetch_assoc());
+            $imageCount = 0;
+            while($row = $prepare->fetch_assoc()) {
+                $imageCount = $row['count'];
+            }
 
             $layout->block('breadcrumb')
                 ->setTemplate('admin/gallery/image/breadcrumb.phtml')
