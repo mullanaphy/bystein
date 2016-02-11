@@ -952,7 +952,10 @@
                 $item = $manager->load(['id' => $request->get('id')], new Gallery);
 
                 if (!$item || !$item->exists()) {
-                    return $this->renderResponse('gallery', ['type' => 'error']);
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Item not found.',
+                    ]);
                 }
                 $direction = str_replace('.json', '', $request->get('sort', 'up.json'));
 
@@ -1017,7 +1020,10 @@
                 ], new Gallery\Linked);
 
                 if (!$item || !$item->exists()) {
-                    return $this->renderResponse('gallery', ['type' => 'error']);
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Item not found.',
+                    ]);
                 }
                 $direction = str_replace('.json', '', $request->get('sort', 'up.json'));
 
@@ -1084,7 +1090,10 @@
                 ], new Gallery\Linked);
 
                 if (!$item || !$item->exists()) {
-                    return $this->renderResponse('gallery', ['type' => 'error']);
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Item not found.',
+                    ]);
                 }
 
                 /**
@@ -1096,6 +1105,7 @@
                 $current = $item->sort;
                 $collection->order()->by('sort')->direction('asc');
                 $collection->where()->field('sort')->gt($current);
+                $swap = false;
                 if ($collection->count()) {
                     $collection->load();
                     $swap = $collection->current();
@@ -1104,9 +1114,19 @@
                     }
                 }
                 $manager->delete($item);
-                $manager->save($swap);
+                if ($swap) {
+                    $manager->save($swap);
+                }
             } catch (\Exception $e) {
-                var_dump($e);
+                return $this->renderResponse('gallery', [
+                    'type' => 'error',
+                    'message' => $e->getMessage(),
+                    'exception' => [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'code' => $e->getCode(),
+                    ]
+                ]);
             }
             return $this->renderResponse('gallery', [
                 'type' => 'success',
