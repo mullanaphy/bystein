@@ -1173,6 +1173,13 @@
                 $images[] = new Image($row);
             }
 
+            $prepare = $database->query("SELECT i.*
+                FROM `gallery_linked` l
+                    INNER JOIN `image` i ON (l.`image_id` = i.`id`)
+                WHERE l.`gallery_id` = " . (int)$id . " LIMIT " . $offset . " ," . $limit);
+
+            $imageCount = current($prepare->fetch_assoc());
+
             $layout->block('breadcrumb')
                 ->setTemplate('admin/gallery/image/breadcrumb.phtml')
                 ->setVariable('item', $item);
@@ -1183,7 +1190,7 @@
                 'viewClass' => 'pagination',
                 'pageId' => $pageId,
                 'limit' => $limit,
-                'total' => count($images),
+                'total' => $imageCount,
                 'url' => [
                     $this->url('admin/galleryImage'),
                     'limit' => $limit
