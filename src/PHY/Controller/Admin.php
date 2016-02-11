@@ -1103,17 +1103,13 @@
                         $swap->sort = $current;
                     }
                 }
-                var_dump($item, $current);
-                exit;
                 $manager->delete($item);
-                $swap->sort = $current;
                 $manager->save($swap);
             } catch (\Exception $e) {
                 var_dump($e);
             }
             return $this->renderResponse('gallery', [
                 'type' => 'success',
-                'direction' => $direction,
             ]);
         }
 
