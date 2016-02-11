@@ -78,8 +78,6 @@
         var content = $('<div class="modal-body"></div>')
             .html(options.message || 'Odd, no content provided...');
         var footer = $('<div class="modal-footer"></div>');
-console.log(options.callback);
-        console.log(options);
         footer.append(
             $('<a href="#" class="btn ' + (typeof options.okclassname !== 'undefined' ? options.okclassname : 'btn-primary') + '"></a>')
                 .text(options.ok || 'Yes')

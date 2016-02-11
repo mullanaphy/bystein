@@ -39,10 +39,10 @@
             <?php if ($galleries->count()): ?>
                 <?php foreach ($galleries as $gallery): ?>
                     <li><a href="<?= $this->url('admin/gallery/id/' . $gallery->id()) ?>"><?= $gallery->name ?>
-                        </a> | <a href="<?= $this->url('admin/galleryImage/id/')?>">Images</a></li>
+                        </a> | <a href="<?= $this->url('admin/galleryImage/id/' . $gallery->id())?>">Images</a></li>
                 <?php endforeach ?>
             <?php else: ?>
-                <li>No news posted yet.</li>
+                <li>No galleries yet.</li>
             <?php endif ?>
         </ul>
         <hr class="hidden-xs"/>
