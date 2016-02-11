@@ -1173,7 +1173,8 @@
 
             $layout->block('breadcrumb')
                 ->setTemplate('admin/gallery/image/breadcrumb.phtml')
-                ->setVariable('item', $item);
+                ->setVariable('item', $item)
+                ->setVariable('galleryId', $galleryId);
             $content->setTemplate('admin/gallery/image/collection.phtml');
             $content->setVariable('item', $item);
             $content->setVariable('images', $images);
@@ -1236,15 +1237,18 @@
                     }
                 }
 
-                if ($gallery_id = $request->get('gallery_id', 0)) {
-                    if (isset($galleries[$gallery_id])) {
-                        $galleries[$gallery_id]->selected = true;
+                if ($galleryId = $request->get('gallery_id', 0)) {
+                    if (isset($galleries[$galleryId])) {
+                        $galleries[$galleryId]->selected = true;
                     }
                 }
                 $content->setVariable('galleries', $galleries);
+                $content->setVariable('galleryId', $galleryId);
 
                 $breadcrumb = $layout->block('breadcrumb');
                 $breadcrumb->setVariable('item', $item);
+                $breadcrumb->setVariable('galleryId', $galleryId);
+
             } else {
                 $pageId = (int)$request->get('pageId', 1);
                 if (!$pageId) {
@@ -1416,10 +1420,12 @@
         {
             $request = $this->getRequest();
             $id = (int)$request->get('id', 0);
+            $galleryId = (int)$request->get('gallery_id', 0);
 
             if (!$id) {
                 return $this->renderResponse('imageCrop', [
-                    'type' => 'warning'
+                    'type' => 'error',
+                    'message' => 'Item not found.',
                 ]);
             }
 
@@ -1440,7 +1446,7 @@
                 return $this->renderResponse('imageCrop', [
                     'title' => 'Image Not Found!',
                     'type' => 'warning',
-                    'message' => 'No image found for id: ' . $id
+                    'message' => 'No image found for id: ' . $id,
                 ]);
             }
 
@@ -1461,14 +1467,17 @@
                 'title' => 'Thumbnail created',
                 'type' => 'success',
                 'message' => 'Successfully cropped: ' . $item->id()
-            ], '/admin/imageCrop/id/' . $item->id());
+            ], '/admin/imageCrop/id/' . $item->id() . ($galleryId
+                    ? '/gallery_id/' . $galleryId
+                    : ''));
         }
 
         public function imageCrop_get()
         {
             $app = $this->getApp();
             $request = $this->getRequest();
-            $id = $request->get('id', false);
+            $id = (int)$request->get('id', 0);
+            $galleryId = (int)$request->get('gallery_id', 0);
 
             if (!$id) {
                 return $this->renderResponse('image', [
@@ -1509,6 +1518,7 @@
             $breadcrumb = $layout->block('breadcrumb');
             $breadcrumb->setTemplate('admin/image/crop/breadcrumb.phtml');
             $breadcrumb->setVariable('item', $item);
+            $breadcrumb->setVariable('galleryId', $galleryId);
 
             if ($message = $app->get('session/admin/imageCrop/message')) {
                 $app->delete('session/admin/imageCrop/message');

@@ -1,8 +1,20 @@
 <div class="page-header">
     <h1><a href="<?= $this->url('admin') ?>">Admin
-            Panel</a> &raquo; <?php if (isset($item)): ?><a href="<?= $this->url('admin/image') ?>">
-                Images</a> &raquo; <?php if ($item->exists()): ?>Editing <?= $this->clean($item->title) ?><?php else: ?>New Image<?php endif ?><?php else: ?>Images
-        <a href="<?= $this->url('admin/image/id/0') ?>">
-                <small><i class="glyphicon glyphicon-plus-sign"></i></small></a><?php endif ?>
+            Panel</a> &raquo; <?php if (isset($item)): ?>
+
+            <?php if (isset($galleryId) && $galleryId):
+                $imageUrl = 'admin/galleryImage/id/' . $galleryId;
+            else:
+                $imageUrl = 'admin/image';
+            endif ?>
+            <a href="<?= $this->url($imageUrl) ?>">
+                Images</a> &raquo;
+            <?php if ($item->exists()): ?>Editing <?= $this->clean($item->title) ?><?php else: ?>New Image<?php endif ?>
+
+        <?php else: ?>
+            Images <a href="<?= $this->url('admin/image/id/0') ?>">
+                <small><i class="glyphicon glyphicon-plus-sign"></i></small>
+            </a>
+        <?php endif ?>
     </h1>
 </div>

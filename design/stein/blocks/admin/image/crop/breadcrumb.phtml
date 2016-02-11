@@ -1,6 +1,13 @@
 <div class="page-header">
-    <h1><a href="<?= $this->url('admin') ?>">Admin Panel</a> &raquo; <a
-            href="<?= $this->url('admin/image') ?>">Images</a> &raquo; <a
-            href="<?= $this->url('admin/image/id/' . $item->id()) ?>"><?= $this->clean($item->title) ?></a> &raquo;
+    <h1><a href="<?= $this->url('admin') ?>">Admin Panel</a> &raquo;
+        <?php if (isset($galleryId) && $galleryId):
+            $imageUrl = 'admin/galleryImage/id/' . $galleryId;
+            $gallerySuffix = '/gallery_id/' . $galleryId;
+        else:
+            $imageUrl = 'admin/image';
+            $gallerySuffix = '';
+        endif ?>
+        <a href="<?= $this->url($imageUrl) ?>">Images</a> &raquo;
+        <a href="<?= $this->url('admin/image/id/' . $item->id() . $gallerySuffix) ?>"><?= $this->clean($item->title) ?></a> &raquo;
         Cropping</h1>
 </div>
