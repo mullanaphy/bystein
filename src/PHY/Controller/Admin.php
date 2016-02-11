@@ -1173,9 +1173,9 @@
                 $images[] = new Image($row);
             }
 
-            $prepare = $database->query("SELECT COUNT(l.*) AS count
-                FROM `gallery_linked` l
-                WHERE l.`gallery_id` = " . (int)$id . " LIMIT 1");
+            $prepare = $database->query("SELECT COUNT(*) AS count
+                FROM `gallery_linked`
+                WHERE `gallery_id` = " . (int)$id);
 
             $imageCount = 0;
             while($row = $prepare->fetch_assoc()) {
@@ -1194,7 +1194,7 @@
                 'limit' => $limit,
                 'total' => $imageCount,
                 'url' => [
-                    $this->url('admin/galleryImage'),
+                    $this->url('admin/galleryImage/id/' . $id),
                     'limit' => $limit
                 ]
             ]);
