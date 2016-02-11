@@ -1161,11 +1161,13 @@
                 $limit = 20;
             }
 
+            $offset = (($pageId * $limit) - $limit);
+
             /** @var \Mysqli_Result $prepare */
             $prepare = $database->query("SELECT i.*
                 FROM `gallery_linked` l
                     INNER JOIN `image` i ON (l.`image_id` = i.`id`)
-                WHERE l.`gallery_id` = " . (int)$id);
+                WHERE l.`gallery_id` = " . (int)$id . " LIMIT " . $offset . " ," . $limit);
             $images = [];
             while ($row = $prepare->fetch_assoc()) {
                 $images[] = new Image($row);
