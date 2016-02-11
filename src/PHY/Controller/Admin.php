@@ -1173,8 +1173,7 @@
 
             $layout->block('breadcrumb')
                 ->setTemplate('admin/gallery/image/breadcrumb.phtml')
-                ->setVariable('item', $item)
-                ->setVariable('galleryId', $galleryId);
+                ->setVariable('item', $item);
             $content->setTemplate('admin/gallery/image/collection.phtml');
             $content->setVariable('item', $item);
             $content->setVariable('images', $images);
