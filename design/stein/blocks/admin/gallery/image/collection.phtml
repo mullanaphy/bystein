@@ -74,7 +74,7 @@
                                 ?: $image->file); ?>"
                             alt="<?= $this->clean($image->alt) ?>" style="height:20px; width:20px;"/><?php endif ?></td>
                     <td class="image-<?= $image->id() ?>-title"><?= $this->clean($image->title); ?></td>
-                    <td class="action"><?= $tag->helper()->url('Edit', '/admin/image/id/' . $image->id()) ?></td>
+                    <td class="action"><?= $tag->helper()->url('Edit', '/admin/galleryImage/gallery_id/' . $item->id() . '/image_id/' . $image->id() ) ?></td>
                     <td class="action">
                         <?=
                             $helper->url('Remove', '/admin/galleryImage/gallery_id/' . $item->id() . '/image_id/' . $image->id() . '/remove', [

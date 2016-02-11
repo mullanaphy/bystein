@@ -1167,7 +1167,7 @@
                 'limit' => $limit,
                 'total' => count($images),
                 'url' => [
-                    $this->url('admin/config'),
+                    $this->url('admin/galleryImage'),
                     'limit' => $limit
                 ]
             ]);
@@ -1250,7 +1250,7 @@
                     'limit' => $limit,
                     'total' => $collection->count(),
                     'url' => [
-                        $this->url('admin/config'),
+                        $this->url('admin/image'),
                         'limit' => $limit
                     ]
                 ]);
