@@ -113,7 +113,7 @@
                         'class' => 'disabled'
                     ]));
                 }
-                for ($i = 1; $i <= $end; ++$i) {
+                for ($i = $start; $i <= $end; ++$i) {
                     $page = $tag->helper()->url($i, $url($i), $attributes);
                     $li = $tag->li($page);
                     if ($i === $id) {
