@@ -1604,8 +1604,8 @@
                 $this->limit = 20;
                 $manager = $this->getApp()->get('database')->getManager();
                 $limit = $manager->load(['key' => 'page_limit'], new Config);
-                if ($limit) {
-                    $this->limit = (int)$limit;
+                if ($limit && $limit->value) {
+                    $this->limit = (int)$limit->value;
                 }
             }
 
