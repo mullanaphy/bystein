@@ -98,8 +98,14 @@
                         };
                 }
                 $attributes = $this->getVariable('attributes', []);
-                $start = 1;
-                $end = $pages;
+                $start = $id - 5;
+                if ($start < 1) {
+                    $start = 1;
+                }
+                $end = $id + 5;
+                if ($end > $pages) {
+                    $end = $pages;
+                }
                 if ($start > 1) {
                     $pagination->append($tag->li($tag->helper()->url('&laquo;', $url($start - 1), $attributes)));
                 } else {
@@ -107,7 +113,7 @@
                         'class' => 'disabled'
                     ]));
                 }
-                for ($i = $start; $i <= $end; ++$i) {
+                for ($i = 1; $i <= $end; ++$i) {
                     $page = $tag->helper()->url($i, $url($i), $attributes);
                     $li = $tag->li($page);
                     if ($i === $id) {
