@@ -38,6 +38,7 @@
      */
     class Admin extends AController
     {
+        private $limit = null;
 
         /**
          * {@inheritDoc}
@@ -155,9 +156,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('Authorize');
@@ -310,9 +311,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('User');
@@ -499,9 +500,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('Config');
@@ -654,9 +655,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('Schedule');
@@ -808,9 +809,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('Gallery');
@@ -1156,9 +1157,9 @@
             if (!$pageId) {
                 $pageId = 1;
             }
-            $limit = (int)$request->get('limit', 20);
+            $limit = (int)$request->get('limit', $this->getLimit());
             if (!$limit) {
-                $limit = 20;
+                $limit = $this->getLimit();
             }
 
             $offset = (($pageId * $limit) - $limit);
@@ -1178,7 +1179,7 @@
                 WHERE `gallery_id` = " . (int)$id);
 
             $imageCount = 0;
-            while($row = $prepare->fetch_assoc()) {
+            while ($row = $prepare->fetch_assoc()) {
                 $imageCount = $row['count'];
             }
 
@@ -1264,9 +1265,9 @@
                 if (!$pageId) {
                     $pageId = 1;
                 }
-                $limit = (int)$request->get('limit', 20);
+                $limit = (int)$request->get('limit', $this->getLimit());
                 if (!$limit) {
-                    $limit = 20;
+                    $limit = $this->getLimit();
                 }
 
                 $collection = $manager->getCollection('Image');
@@ -1590,6 +1591,25 @@
                 return $this->redirect($redirect);
             }
             return $this->redirect('/admin/' . $action);
+        }
+
+        /**
+         * Get a page limit to use.
+         *
+         * @return int
+         */
+        private function getLimit()
+        {
+            if ($this->limit === null) {
+                $this->limit = 20;
+                $manager = $this->getApp()->get('database')->getManager();
+                $limit = $manager->load(['key' => 'page_limit'], new Config);
+                if ($limit) {
+                    $this->limit = (int)$limit;
+                }
+            }
+
+            return $this->limit;
         }
 
     }
