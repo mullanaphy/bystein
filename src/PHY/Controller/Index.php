@@ -62,43 +62,29 @@
             $content = $layout->block('content');
             $content->setVariable('galleries', $collection);
             $content->setVariable('galleryImages', function ($id) use ($database, $manager) {
-                /** @var \Mysqli_Result $prepare */
-                $prepare = $database->query("SELECT i.*
+                /** @var \Mysqli_Result $query */
+                $query = $database->query("SELECT i.*
                     FROM `gallery_linked` l
                         INNER JOIN `image` i ON (l.`image_id` = i.`id`)
                     WHERE l.`gallery_id` = " . (int)$id . "
                     LIMIT 13");
                 $rows = [];
-                while ($row = $prepare->fetch_assoc()) {
+                while ($row = $query->fetch_assoc()) {
                     $rows[] = new Image($row);
                 }
                 return $rows;
             });
 
-            /* @var \MySQLi_STMT $query */
-            $database->multi_query("SET @image := 0, @gallery:= '';
-                SELECT o.*, g.`name`
-                FROM (
-                    SELECT l.`gallery_id`, i.*, @image := if(@gallery = l.`gallery_id`, @image + 1, 1) AS n, @gallery := l.`gallery_id` AS g
-                    FROM `gallery_linked` AS l
-                        INNER JOIN `image` i ON (l.`image_id` = i.`id`)
-                    ORDER BY l.`gallery_id` ASC, l.`sort` ASC
-                ) AS o
-                INNER JOIN `gallery` g ON (o.`gallery_id` = g.`id`)
-                WHERE n <= 7
-                ORDER BY g.`sort` ASC;", MYSQLI_USE_RESULT);
-
-            do {
-                if ($result = $database->store_result()) {
-                    $collection = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $item = new Image;
-                        $item->set($row, true);
-                        $collection[] = $item;
-                    }
-                    $result->free();
-                }
-            } while ($database->more_results() && $database->next_result());
+            /* @var \Mysqli_Result $query */
+            $query = $database->query("SELECT i.*
+                FROM `image` i
+                WHERE i.`carousel` = 1");
+            $collection = [];
+            while ($row = $query->fetch_assoc()) {
+                $item = new Image;
+                $item->set($row, true);
+                $collection[] = $item;
+            }
 
             $content->setChild('jumbotron', [
                 'template' => 'index/featured.phtml',

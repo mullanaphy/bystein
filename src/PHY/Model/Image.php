@@ -39,6 +39,7 @@
                         'alt' => 'variable',
                         'file' => 'variable',
                         'thumbnail' => 'variable',
+                        'carousel' => 'boolean',
                     ]
                 ]
             ]
