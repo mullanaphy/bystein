@@ -74,8 +74,9 @@
                 <?php endif ?>
             </div>
             <div class="checkbox">
-                <label for="carousel" class="control-label"><input type="checkbox" name="image[carousel]"
-                                                                   value="1"<?php if ($item->carousel): ?> checked="checked"<?php endif ?>/>
+                <label for="image-carousel" class="control-label"><input id="image-carousel" name="image[carousel]"
+                                                                         type="checkbox"
+                                                                         value="1"<?php if ($item->carousel): ?> checked="checked"<?php endif ?>/>
                     Include In Carousel</label>
             </div>
         </div>
