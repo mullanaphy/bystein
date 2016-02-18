@@ -85,7 +85,7 @@
                     ORDER BY l.`gallery_id` ASC, l.`sort` ASC
                 ) AS o
                 INNER JOIN `gallery` g ON (o.`gallery_id` = g.`id`)
-                WHERE n <= 25
+                WHERE n <= 7
                 ORDER BY g.`sort` ASC;", MYSQLI_USE_RESULT);
 
             do {

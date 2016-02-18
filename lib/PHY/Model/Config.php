@@ -182,9 +182,8 @@
                 return array_key_exists('value_' . $type, $this->data)
                     ? $this->data['value_' . $type]
                     : null;
-            } else {
-                return parent::get($key);
             }
+            return parent::get($key);
         }
 
         /**

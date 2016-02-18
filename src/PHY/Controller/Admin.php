@@ -1004,6 +1004,9 @@
          */
         public function galleryImageSort_post()
         {
+            $request = $this->getRequest();
+            $direction = str_replace('.json', '', $request->get('sort', 'up.json'));
+
             try {
 
                 /**
@@ -1014,7 +1017,7 @@
                  * @var \PHY\Database\IManager $manager
                  */
                 $manager = $database->getManager();
-                $request = $this->getRequest();
+
                 $item = $manager->load([
                     'image_id' => $request->get('image_id'),
                     'gallery_id' => $request->get('gallery_id')
@@ -1026,7 +1029,6 @@
                         'message' => 'Item not found.',
                     ]);
                 }
-                $direction = str_replace('.json', '', $request->get('sort', 'up.json'));
 
                 /**
                  * @var \PHY\Model\Gallery\Linked\Collection $collection
@@ -1035,12 +1037,14 @@
                 $collection->limit(1);
 
                 $current = $item->sort;
+                $where = $collection->where();
+                $where->field('gallery_id')->is($item->gallery_id);
                 if ($direction === 'up') {
                     $collection->order()->by('sort')->direction('desc');
-                    $collection->where()->field('sort')->lt($current);
+                    $where->field('sort')->lt($current);
                 } else {
                     $collection->order()->by('sort')->direction('asc');
-                    $collection->where()->field('sort')->gt($current);
+                    $where->field('sort')->gt($current);
                 }
                 if (!$collection->count()) {
                     return $this->renderResponse('gallery', [
@@ -1168,7 +1172,8 @@
             $prepare = $database->query("SELECT i.*
                 FROM `gallery_linked` l
                     INNER JOIN `image` i ON (l.`image_id` = i.`id`)
-                WHERE l.`gallery_id` = " . (int)$id . " LIMIT " . $offset . " ," . $limit);
+                WHERE l.`gallery_id` = " . (int)$id . " ORDER BY `sort` ASC
+                LIMIT " . $offset . " ," . $limit);
             $images = [];
             while ($row = $prepare->fetch_assoc()) {
                 $images[] = new Image($row);
