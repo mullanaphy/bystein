@@ -1317,7 +1317,9 @@
                 'id' => '',
                 'title' => '',
                 'alt' => '',
+                'carousel' => '0'
             ]);
+            $data['carousel'] = !!$data['carousel'];
 
             if ($id) {
                 $item = $manager->load($id, new Image);
