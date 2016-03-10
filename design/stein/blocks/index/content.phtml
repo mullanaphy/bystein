@@ -1,3 +1,4 @@
+<?php /** @var $image \PHY\Model\Image */ ?>
 <?= $this->child('jumbotron') ?>
 <?php foreach ($galleries as $gallery): ?>
     <?php $images = $galleryImages($gallery->id()); ?>
@@ -7,7 +8,7 @@
                 <div class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner">
                         <div class="item active">
-                            <div class="row">
+                            <div class="row thumbnail-gallery">
                                 <?php for ($i = 0; $i < $count; ++$i): ?>
                                     <?php if ($i > 11):
                                         break;
@@ -15,8 +16,9 @@
                                     <?php $image = $images[$i] ?>
                                     <div class="col-sm-2">
                                         <div class="thumbnail">
-                                            <a href="<?= $this->clean($image->getImage()) ?>"><img
-                                                    src="<?= $this->clean($image->getImage()) ?>" height="60"
+                                            <a href="<?= $this->clean($image->getImage()) ?>"
+                                               data-toggle="lightbox" data-parent=".thumbnail-gallery"><img
+                                                    src="<?= $this->clean($image->thumbnail) ?>" height="60"
                                                     alt="<?= $this->clean($image->title) ?>"/></a>
                                         </div>
                                     </div>
@@ -131,7 +133,6 @@
                 if (started) {
                     return false;
                 }
-
                 started = true;
                 if (locations.on === 'up') {
                     var run = function() {
@@ -150,6 +151,10 @@
                 }
                 return false;
             });
+        });
+        $(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+            event.preventDefault();
+            $(this).ekkoLightbox();
         });
     }(jQuery);
 </script>

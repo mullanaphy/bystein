@@ -8,6 +8,7 @@
         "files": {
           "css": [
             "bootstrap.min.css",
+            "lightbox.min.css",
             "core.css"
           ]
         }
@@ -20,7 +21,7 @@
             "viewClass": "header/menu",
             "links": {
               "resume": {
-                "title": "Résumé",
+                "title": "R\u00e9sum\u00e9",
                 "url": "chris-stein-resume.pdf"
               },
               "contact": {
@@ -41,10 +42,11 @@
       },
       "footer": {
         "viewClass": "footer",
-        "copyright": "&copy; By Stein 2015",
+        "copyright": "&copy; By Stein 2016",
         "files": {
           "js": [
-            "bootstrap.min.js"
+            "bootstrap.min.js",
+            "lightbox.min.js"
           ]
         }
       },
