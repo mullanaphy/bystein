@@ -1468,7 +1468,7 @@
 
             $file = $item->file;
             $file = explode('.', $file);
-            $file[count($file) - 1] = 't-' . time() . $file[count($file) - 1];
+            $file[count($file) - 1] = 't-' . time() . '.' . $file[count($file) - 1];
             $file = implode('.', $file);
 
             $path = $this->getApp()->getPath()->getRoutes()['public'];
