@@ -1319,7 +1319,9 @@
                 'alt' => '',
                 'carousel' => '0'
             ]);
-            $data['carousel'] = (int)$data['carousel'];
+            $data['carousel'] = isset($data['carousel'])
+                ? (int)$data['carousel']
+                : 0;
 
             if ($id) {
                 $item = $manager->load($id, new Image);
