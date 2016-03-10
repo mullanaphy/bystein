@@ -1359,17 +1359,33 @@
 
             /* First lets remove all old linked gallery/image combos */
             $collection = $manager->getCollection('Gallery\Linked');
-            $collection->where()->field('image_id')->is($id);
+            $collection->order()->by('sort');
+            $galleries = [];
+            $existingGalleries = [];
             foreach ($collection as $linked) {
-                $manager->delete($linked);
+                if (!isset($galleries[$linked->gallery_id])) {
+                    $galleries[$linked->image_id] = 0;
+                }
+                $galleries[$linked->image_id] += 1;
+                if ($linked->sort != $galleries[$linked->image_id]) {
+                    $linked->sort = $galleries[$linked->image_id];
+                    $manager->save($linked);
+                }
+                $existingGalleries[$linked->gallery_id] = $linked->image_id == $item->id();
             }
 
             $galleries = $request->get('gallery', []);
 
             foreach ($galleries as $gallery_id) {
+                if (isset($existingGalleries[$gallery_id]) || $existingGalleries[$gallery_id]) {
+                    continue;
+                }
                 $linked = new Gallery\Linked([
                     'gallery_id' => $gallery_id,
-                    'image_id' => $item->id()
+                    'image_id' => $item->id(),
+                    'sort' => isset($galleries[$gallery_id])
+                        ? $galleries[$gallery_id] + 1
+                        : 1,
                 ]);
                 $manager->save($linked);
             }
