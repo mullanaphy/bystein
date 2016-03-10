@@ -1319,7 +1319,7 @@
                 'alt' => '',
                 'carousel' => '0'
             ]);
-            $data['carousel'] = !!$data['carousel'];
+            $data['carousel'] = (int)$data['carousel'];
 
             if ($id) {
                 $item = $manager->load($id, new Image);
@@ -1373,10 +1373,9 @@
             }
 
             $parameters = $this->getRequest()->getParameters();
+            $url = 'image/id/' . $item->id();
             if (isset($parameters['gallery_id'])) {
-                $url = 'galleryImage/id/' . $parameters['gallery_id'];
-            } else {
-                $url = 'image';
+                $url .= '/gallery_id/' . $parameters['gallery_id'];
             }
 
             return $this->renderResponse($url, [
