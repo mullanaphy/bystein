@@ -50,18 +50,28 @@
 <script src="<?= $this->url('plugin/jcrop.min.js', 'js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
     !function($) {
+        var _getSizeRatio = function(element) {
+            var elementHeight = parseFloat(element.height);
+            var elementStyleHeight = parseFloat(element.style.height.replace('px', ''));
+            if (elementHeight !== elementStyleHeight) {
+                return elementHeight / elementStyleHeight;
+            }
+            return 1;
+        };
         $(function() {
             var $x = $('#x');
             var $y = $('#y');
             var $width = $('#width');
             var $height = $('#height');
+            var img = $('#cropper');
             var update = function(cropper) {
-                $x.val(cropper.x);
-                $y.val(cropper.y);
-                $width.val(cropper.w);
-                $height.val(cropper.h);
+                var sizeRatio = _getSizeRatio(img[0]);
+                $x.val(cropper.x * sizeRatio);
+                $y.val(cropper.y * sizeRatio);
+                $width.val(cropper.w * sizeRatio);
+                $height.val(cropper.h * sizeRatio);
             };
-            $('#cropper').Jcrop({
+            img.Jcrop({
                 onChange: update,
                 onSelect: update,
                 aspectRatio: 0.5
