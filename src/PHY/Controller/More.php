@@ -41,12 +41,12 @@
             $limit = 12;
             $app = $this->getApp();
             $database = $app->get('database');
+            $response = new Json;
 
             $request = $this->getRequest();
             $galleryId = (int)$request->get('galleryId', false);
             if (!$galleryId) {
-                echo json_encode(['content' => false, 'more' => false]);
-                exit;
+                return $response->setData(['content' => false, 'more' => false]);
             }
             $caller = $request->get('_caller', 1) + 1;
             $start = $caller * $limit - $limit;
@@ -66,9 +66,9 @@
                     'alt' => $image->title
                 ]), ['href' => $image->getImage()]), ['class' => 'thumbnail']), ['class' => 'col-sm-2']);
             }
+
             if (!$rows) {
-                echo json_encode(['content' => false, 'more' => false]);
-                exit;
+                return $response->setData(['content' => false, 'more' => false]);
             }
 
             $more = false;
@@ -77,7 +77,7 @@
                 array_pop($rows);
             }
 
-            return new Json([
+            return $response->setData([
                 'content' => (string)$markup->div($markup->div($rows, [
                     'class' => 'row'
                 ]), [

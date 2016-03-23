@@ -156,5 +156,7 @@
             event.preventDefault();
             $(this).ekkoLightbox();
         });
+        var carousel = $('#carousel-featured');
+        carousel.height($('img', carousel)[0].height);
     }(jQuery);
 </script>
