@@ -1180,8 +1180,9 @@
             }
 
             $prepare = $database->query("SELECT COUNT(*) AS count
-                FROM `gallery_linked`
-                WHERE `gallery_id` = " . (int)$id);
+                FROM `gallery_linked` l
+                    INNER JOIN `image` i ON (l.`image_id` = i.`id`)
+                WHERE l.`gallery_id` = " . (int)$id);
 
             $imageCount = 0;
             while ($row = $prepare->fetch_assoc()) {
