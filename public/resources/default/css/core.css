@@ -26,14 +26,6 @@ body {
     height: 100px !important;
 }
 
-.navbar {
-
-}
-
-#carousel-featured img {
-    height: 500px;
-}
-
 .hover-up, .hover-down {
     cursor: pointer;
     display: none;
