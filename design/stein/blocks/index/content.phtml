@@ -39,8 +39,8 @@
                 </div>
             </div>
             <div class="visible-xs">
-                <a href="#" class="btn btn-primary prev">&laqou;</a>
-                <a href="#" class="btn btn-primary next">&raqou;</a>
+                <a href="#" class="btn btn-danger prev">&laquo;</a>
+                <a href="#" class="btn btn-danger next">&raquo;</a>
             </div>
         </div>
     <?php endif ?>
@@ -160,6 +160,7 @@
                     elementCarousel.carousel('prev').carousel('pause');
                     started = false;
                 }
+                return false;
             });
             $(elementHolder).on('click', '.next', function() {
                 event.stopPropagation();
