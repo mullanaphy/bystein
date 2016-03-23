@@ -156,9 +156,9 @@
             event.preventDefault();
             $(this).ekkoLightbox();
         });
-        $(function() {
-            var carousel = $('#carousel-featured');
-            carousel.height($('img', carousel)[0].height);
+        var carousel = $('#carousel-featured');
+        $('img', carousel).first().load(function(){
+            carousel.height(this.height);
         });
     }(jQuery);
 </script>
