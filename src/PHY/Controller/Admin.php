@@ -1364,11 +1364,11 @@
             $existingGalleries = [];
             foreach ($collection as $linked) {
                 if (!isset($galleries[$linked->gallery_id])) {
-                    $galleries[$linked->image_id] = 0;
+                    $galleries[$linked->gallery_id] = 0;
                 }
-                $galleries[$linked->image_id] += 1;
-                if ($linked->sort != $galleries[$linked->image_id]) {
-                    $linked->sort = $galleries[$linked->image_id];
+                $galleries[$linked->gallery_id] += 1;
+                if ($linked->sort != $galleries[$linked->gallery_id]) {
+                    $linked->sort = $galleries[$linked->gallery_id];
                     $manager->save($linked);
                 }
                 $existingGalleries[$linked->gallery_id] = $linked->image_id == $item->id();

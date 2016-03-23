@@ -14,6 +14,7 @@
 
     namespace PHY\Controller;
 
+    use PHY\Http\Response\Json;
     use PHY\Markup\HTML5 as Markup;
     use PHY\Model\Config as ConfigModel;
     use PHY\Model\Image;
@@ -61,7 +62,7 @@
             while ($row = $prepare->fetch_assoc()) {
                 $image = new Image($row);
                 $rows[] = $markup->div($markup->div($markup->a($markup->img([
-                    'src' => $image->getImage(),
+                    'src' => $image->thumbnail,
                     'alt' => $image->title
                 ]), ['href' => $image->getImage()]), ['class' => 'thumbnail']), ['class' => 'col-sm-2']);
             }
@@ -76,8 +77,7 @@
                 array_pop($rows);
             }
 
-            header('Content-Type: application/json');
-            echo json_encode([
+            return new Json([
                 'content' => (string)$markup->div($markup->div($rows, [
                     'class' => 'row'
                 ]), [
@@ -85,7 +85,6 @@
                 ]),
                 'more' => $more
             ]);
-            exit;
         }
 
     }
