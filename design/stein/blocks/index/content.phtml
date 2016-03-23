@@ -14,7 +14,7 @@
                                         break;
                                     endif ?>
                                     <?php $image = $images[$i] ?>
-                                    <div class="col-sm-2">
+                                    <div class="col-xs-4 col-sm-2">
                                         <div class="thumbnail">
                                             <a href="<?= $this->clean($image->getImage()) ?>"
                                                data-toggle="lightbox" data-parent=".thumbnail-gallery"><img
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-3 hidden-xs">
                 <div class="hover" data-gallery="<?= (int)$gallery->id() ?>" data-more="<?= $count > 12
                     ? 1
                     : 0 ?>" style="position:relative">
@@ -37,6 +37,10 @@
                     <img class="hover-up" src="<?= $this->url('hover-up.png', 'image') ?>"/>
                     <img class="hover-down" src="<?= $this->url('hover-down.png', 'image') ?>"/>
                 </div>
+            </div>
+            <div class="visible-xs">
+                <a href="#" class="btn btn-primary prev">&laqou;</a>
+                <a href="#" class="btn btn-primary next">&raqou;</a>
             </div>
         </div>
     <?php endif ?>
@@ -151,13 +155,34 @@
                 }
                 return false;
             });
+            $(elementHolder).on('click', '.prev', function() {
+                if (less) {
+                    elementCarousel.carousel('prev').carousel('pause');
+                    started = false;
+                }
+            });
+            $(elementHolder).on('click', '.next', function() {
+                event.stopPropagation();
+                if (started) {
+                    return false;
+                }
+                var run = function() {
+                    if (!running) {
+                        getMore();
+                    } else {
+                        setTimeout(run, 100);
+                    }
+                };
+                run();
+                return false;
+            });
         });
         $(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
             event.preventDefault();
             $(this).ekkoLightbox();
         });
         var carousel = $('#carousel-featured');
-        $('img', carousel).first().load(function(){
+        $('img', carousel).first().load(function() {
             carousel.height(this.height);
         });
     }(jQuery);
