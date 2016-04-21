@@ -19,7 +19,9 @@
      * @author John Mullanaphy <john@jo.mu>
      *
      * @var $this \PHY\View\Block
+     * @var $item \PHY\Model\Gallery
      * @var $images \PHY\Model\Image\Collection
+     * @var $row \stdClass
      */
 ?>
 <?php $tag = $this->tag() ?>
@@ -69,7 +71,7 @@
     <?php if (count($images)): ?>
         <?php foreach ($images as $row): ?>
             <tr class="image-<?= $row->image->id() ?>">
-                <td class="galleryLinked-<?= $row->linked->sort ?>-sort"><?= $row->sort ?></td>
+                <td class="galleryLinked-<?= $row->linked->sort ?>-sort"><?= $row->linked->sort ?></td>
                 <td class="image-<?= $row->image->id() ?>-name"><?php if ($row->image->file): ?><img
                         src="<?= $this->clean($row->image->thumbnail
                             ?: $row->image->file); ?>"
