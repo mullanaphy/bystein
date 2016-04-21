@@ -50,7 +50,7 @@ body {
 }
 
 .row-bg {
-    background: rgba(255, 0, 0, 0.35);
+    background: url(../image/gallery-bg.jpg);
     margin: 2em 0;
     padding: 1em 0 0;
 }
