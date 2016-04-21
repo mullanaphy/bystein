@@ -49,7 +49,9 @@
 <table class="table table-striped" id="images">
     <colgroup>
         <col width="5%"/>
+        <col width="5%"/>
         <col/>
+        <col width="5%"/>
         <col width="5%"/>
         <col width="5%"/>
         <col width="2.5%"/>
@@ -57,19 +59,17 @@
     </colgroup>
     <thead>
     <tr>
-        <th></th>
+        <th>Sort</th>
+        <th>Thumbnail</th>
         <th>Title</th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th colspan="5"></th>
     </tr>
     </thead>
     <tbody>
     <?php if (count($images)): ?>
         <?php foreach ($images as $row): ?>
             <tr class="image-<?= $row->image->id() ?>">
-                <td class="galleryLinked-<?= $row->linked->sort ?>-sort"></td>
+                <td class="galleryLinked-<?= $row->linked->sort ?>-sort"><?= $row->sort ?></td>
                 <td class="image-<?= $row->image->id() ?>-name"><?php if ($row->image->file): ?><img
                         src="<?= $this->clean($row->image->thumbnail
                             ?: $row->image->file); ?>"
@@ -90,15 +90,7 @@
                         ]
                     ]) ?>
                 </td>
-                <td class="action">
-                    <label>
-                        <span class="hidden">Jump:</span>
-                        <input class="jump galleryLinked-<?= $row->linked->sort ?>-sort" name="jump" type="number"
-                               value="<?= $row->linked->sort ?>"/>
-                    </label>
-                </td>
-
-                <td><?= $helper->url($tag->span->class([
+                <td class="action"><?= $helper->url($tag->span->class([
                         'glyphicon',
                         'glyphicon-arrow-up'
                     ]), '/admin/galleryImageSort/gallery_id/' . $item->id() . '/image_id/' . $row->image->id() . '/sort/up', [
@@ -108,7 +100,7 @@
                             'type' => 'sorter'
                         ]
                     ]) ?></td>
-                <td><?= $helper->url($tag->span->class([
+                <td class="action"><?= $helper->url($tag->span->class([
                         'glyphicon',
                         'glyphicon-arrow-down'
                     ]), '/admin/galleryImageSort/gallery_id/' . $item->id() . '/image_id/' . $row->image->id() . '/sort/down', [
@@ -118,6 +110,13 @@
                             'type' => 'sorter'
                         ]
                     ]) ?></td>
+                <td class="action">
+                    <label>
+                        <span class="hidden">Jump:</span>
+                        <input class="jump galleryLinked-<?= $row->linked->sort ?>-sort" name="jump" type="number"
+                               value="<?= $row->linked->sort ?>"/>
+                    </label>
+                </td>
             </tr>
         <?php endforeach; ?>
     <?php else: ?>
