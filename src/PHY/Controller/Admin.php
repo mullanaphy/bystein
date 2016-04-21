@@ -1079,7 +1079,6 @@
         public function galleryImage_delete()
         {
             try {
-
                 /**
                  * @var \PHY\Database\IDatabase $database
                  */
@@ -1089,8 +1088,17 @@
                  */
                 $manager = $database->getManager();
                 $request = $this->getRequest();
+                $gallery_id = $request->get('gallery_id', false);
+
+                if (!$gallery_id) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Gallery not found.',
+                    ]);
+                }
+
                 $item = $manager->load([
-                    'gallery_id' => $request->get('gallery_id'),
+                    'gallery_id' => $gallery_id,
                     'image_id' => $request->get('image_id')
                 ], new Gallery\Linked);
 
@@ -1105,23 +1113,18 @@
                  * @var \PHY\Model\Gallery\Collection $collection
                  */
                 $collection = $manager->getCollection('Gallery\Linked');
-                $collection->limit(1);
 
-                $current = $item->sort;
+                $i = $item->sort;
                 $collection->order()->by('sort')->direction('asc');
-                $collection->where()->field('sort')->gt($current);
-                $swap = false;
+                $collection->where()->field('gallery_id')->is($gallery_id);
+                $collection->where()->field('sort')->gt($i);
                 if ($collection->count()) {
-                    $collection->load();
-                    $swap = $collection->current();
-                    if ($swap && $swap->exists()) {
-                        $swap->sort = $current;
+                    foreach ($collection as $item) {
+                        $item->sort = $i++;
+                        $manager->save($item);
                     }
                 }
                 $manager->delete($item);
-                if ($swap) {
-                    $manager->save($swap);
-                }
             } catch (\Exception $e) {
                 return $this->renderResponse('gallery', [
                     'type' => 'error',
@@ -1169,14 +1172,20 @@
             $offset = (($pageId * $limit) - $limit);
 
             /** @var \Mysqli_Result $prepare */
-            $prepare = $database->query("SELECT i.*
+            $prepare = $database->query("SELECT i.*, l.`sort`, l.`gallery_id`, l.`id` as `linked_id`
                 FROM `gallery_linked` l
                     INNER JOIN `image` i ON (l.`image_id` = i.`id`)
                 WHERE l.`gallery_id` = " . (int)$id . " ORDER BY `sort` ASC
                 LIMIT " . $offset . " ," . $limit);
             $images = [];
             while ($row = $prepare->fetch_assoc()) {
-                $images[] = new Image($row);
+                $image = new Image($row);
+                $row['id'] = $row['linked_id'];
+                $linked = new Gallery\Linked($row);
+                $images[] = (object)[
+                    'image' => $image,
+                    'linked' => $linked,
+                ];
             }
 
             $prepare = $database->query("SELECT COUNT(*) AS count
@@ -1210,6 +1219,97 @@
                 $message['template'] = 'generic/message.phtml';
                 $content->setChild('message', $message);
             }
+        }
+
+        /**
+         * POST /admin/galleryJump
+         */
+        public function galleryJump_post()
+        {
+            $request = $this->getRequest();
+            $jumpUrl = $request->getEnvironmental('HTTP_REFERER');
+            try {
+
+                /**
+                 * @var \PHY\Database\IDatabase $database
+                 */
+                $database = $this->getApp()->get('database');
+                /**
+                 * @var \PHY\Database\IManager $manager
+                 */
+                $manager = $database->getManager();
+                $jump = (int)$request->get('jump', 0);
+                if (!$jump) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Jump required.',
+                    ], $jumpUrl);
+                }
+
+                $item = $manager->load(['id' => $request->get('id')], new Gallery\Linked);
+                if (!$item || !$item->exists()) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Item not found.',
+                    ], $jumpUrl);
+                }
+
+                $current = $item->sort;
+                $jumpDistance = $jump - $current;
+
+                $limit = (int)$request->get('limit', $this->getLimit());
+                $pageId = floor($jump / $limit);
+
+                $parameters = [
+                    'pageId' => $pageId,
+                ];
+                if ($limit !== $this->getLimit()) {
+                    $parameters['limit'] = $limit;
+                }
+                $jumpUrl = '/admin/gallery/id/' . $item->id() . http_build_query($parameters);
+
+                if (!$jumpDistance) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Jump distance hasn\'t changed man.'
+                    ], $jumpUrl);
+                }
+
+                $item->sort = $jump;
+
+                /**
+                 * @var \PHY\Model\Gallery\Collection $collection
+                 */
+                $collection = $manager->getCollection('Gallery\Linked');
+                if ($jumpDistance < 0) {
+                    $difference = 1;
+                    $collection->order()->by('sort')->direction('desc');
+                    $collection->where()->field('sort')->lt($current);
+                } else {
+                    $difference = -1;
+                    $collection->order()->by('sort')->direction('asc');
+                    $collection->where()->field('sort')->gt($current);
+                }
+                $collection->limit(abs($jumpDistance));
+
+                if (!$collection->count()) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'success',
+                    ], $jumpUrl);
+                }
+
+                foreach ($collection as $row) {
+                    $row->sort = $row->sort + $difference;
+                    $manager->save($row);
+                }
+                $manager->save($item);
+
+            } catch (\Exception $e) {
+                var_dump($e);
+            }
+            return $this->renderResponse('gallery', [
+                'type' => 'success',
+            ], $jumpUrl);
         }
 
         /**
@@ -1375,10 +1475,8 @@
                 $existingGalleries[$linked->gallery_id] = $linked->image_id == $item->id();
             }
 
-            $galleries = $request->get('gallery', []);
-
-            foreach ($galleries as $gallery_id) {
-                if (isset($existingGalleries[$gallery_id]) || $existingGalleries[$gallery_id]) {
+            foreach ($request->get('gallery', []) as $gallery_id) {
+                if (isset($existingGalleries[$gallery_id]) && $existingGalleries[$gallery_id]) {
                     continue;
                 }
                 $linked = new Gallery\Linked([
@@ -1444,7 +1542,33 @@
                 ]);
             }
             $file = $item->file;
+
+            $galleries = [];
+            $collection = $manager->getCollection('Gallery\Linked');
+            $collection->where()->field('image_id')->is($id);
+            foreach ($collection as $item) {
+                $galleries[] = $item->gallery_id;
+            }
+
+            /**
+             * @var \PHY\Model\Gallery\Collection $collection
+             */
+            foreach ($galleries as $gallery_id) {
+                $collection = $manager->getCollection('Gallery\Linked');
+
+                $i = $item->sort;
+                $collection->order()->by('sort')->direction('asc');
+                $collection->where()->field('gallery_id')->is($gallery_id);
+                $collection->where()->field('sort')->gt($i);
+                if ($collection->count()) {
+                    foreach ($collection as $item) {
+                        $item->sort = $i++;
+                        $manager->save($item);
+                    }
+                }
+            }
             $manager->delete($item);
+
             return $this->renderResponse('image', [
                 'title' => 'Image go bye bye!',
                 'type' => 'success',
