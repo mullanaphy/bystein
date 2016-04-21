@@ -1264,7 +1264,7 @@
                 if ($limit !== $this->getLimit()) {
                     $parameters['limit'] = $limit;
                 }
-                $jumpUrl = '/admin/gallery/id/' . $item->gallery_id . '?' . http_build_query($parameters);
+                $jumpUrl = '/admin/galleryImage/id/' . $item->gallery_id . '?' . http_build_query($parameters);
 
                 if (!$jump) {
                     return $this->renderResponse('gallery', [
