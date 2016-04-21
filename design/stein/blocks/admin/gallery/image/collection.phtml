@@ -55,7 +55,7 @@
         <col width="5%"/>
         <col width="5%"/>
         <col width="2.5%"/>
-        <col width="2.5%"/>
+        <col width="10%"/>
     </colgroup>
     <thead>
     <tr>
@@ -110,12 +110,12 @@
                             'type' => 'sorter'
                         ]
                     ]) ?></td>
-                <td class="action">
-                    <label>
-                        <span class="hidden">Jump:</span>
-                        <input class="jump galleryLinked-<?= $row->linked->sort ?>-sort" name="jump" type="number"
-                               value="<?= $row->linked->sort ?>"/>
-                    </label>
+                <td class="action form-control">
+                    <label class="sr-only" for="galleryLinked-<?= $row->linked->id() ?>">Jump:</label>
+                    <input class="form-control jump galleryLinked-<?= $row->linked->sort ?>-sort"
+                           id="galleryLinked-<?= $row->linked->id() ?>" name="jump"
+                           type="number"
+                           value="<?= $row->linked->sort ?>"/>
                 </td>
             </tr>
         <?php endforeach; ?>
