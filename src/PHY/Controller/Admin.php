@@ -1229,23 +1229,21 @@
             $request = $this->getRequest();
             $jumpUrl = $request->getEnvironmental('HTTP_REFERER');
             try {
+                $jump = (int)$request->get('jump', 0);
 
                 /**
                  * @var \PHY\Database\IDatabase $database
                  */
                 $database = $this->getApp()->get('database');
+
                 /**
                  * @var \PHY\Database\IManager $manager
                  */
                 $manager = $database->getManager();
-                $jump = (int)$request->get('jump', 0);
-                if (!$jump) {
-                    return $this->renderResponse('gallery', [
-                        'type' => 'error',
-                        'message' => 'Jump required.',
-                    ], $jumpUrl);
-                }
 
+                /**
+                 * @var \PHY\Model\Image $item
+                 */
                 $item = $manager->load(['id' => $request->get('id')], new Gallery\Linked);
                 if (!$item || !$item->exists()) {
                     return $this->renderResponse('gallery', [
@@ -1254,11 +1252,11 @@
                     ], $jumpUrl);
                 }
 
-                $current = $item->sort;
+                $current = (int)$item->sort;
                 $jumpDistance = $jump - $current;
 
                 $limit = (int)$request->get('limit', $this->getLimit());
-                $pageId = floor($jump / $limit);
+                $pageId = ceil($jump / $limit);
 
                 $parameters = [
                     'pageId' => $pageId,
@@ -1266,7 +1264,14 @@
                 if ($limit !== $this->getLimit()) {
                     $parameters['limit'] = $limit;
                 }
-                $jumpUrl = '/admin/gallery/id/' . $item->id() . http_build_query($parameters);
+                $jumpUrl = '/admin/gallery/id/' . $item->gallery_id . '?' . http_build_query($parameters);
+
+                if (!$jump) {
+                    return $this->renderResponse('gallery', [
+                        'type' => 'error',
+                        'message' => 'Jump required.',
+                    ], $jumpUrl);
+                }
 
                 if (!$jumpDistance) {
                     return $this->renderResponse('gallery', [
@@ -1281,6 +1286,8 @@
                  * @var \PHY\Model\Gallery\Collection $collection
                  */
                 $collection = $manager->getCollection('Gallery\Linked');
+
+                $collection->where()->field('gallery_id')->is($item->gallery_id);
                 if ($jumpDistance < 0) {
                     $difference = 1;
                     $collection->order()->by('sort')->direction('desc');
@@ -1303,7 +1310,6 @@
                     $manager->save($row);
                 }
                 $manager->save($item);
-
             } catch (\Exception $e) {
                 var_dump($e);
             }

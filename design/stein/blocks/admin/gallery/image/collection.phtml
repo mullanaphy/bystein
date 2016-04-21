@@ -115,6 +115,7 @@
                 <td class="action">
                     <label class="sr-only" for="galleryLinked-<?= $row->linked->id() ?>">Jump:</label>
                     <input class="form-control jump galleryLinked-<?= $row->linked->sort ?>-sort"
+                           data-id="<?= $row->linked->id() ?>"
                            id="galleryLinked-<?= $row->linked->id() ?>" name="jump"
                            type="number"
                            value="<?= $row->linked->sort ?>"/>
@@ -134,7 +135,7 @@
 <?= $this->child('pagination') ?>
 <form action="<?= $this->url('admin/galleryJump') ?>" id="jump-form" method="POST"></form>
 <script type="text/javascript">
-    require(['jquery'], function($) {
+    !function($) {
         var ENTER_KEY = 13;
         var makeInput = function(key, value) {
             var input = document.createElement('INPUT');
@@ -153,9 +154,9 @@
                 var item = $(this);
                 var jumpForm = $('#jump-form')[0];
                 jumpForm.appendChild(makeInput('jump', item.val()));
-                jumpForm.appendChild(makeInput('gallery_id', item.data('image_id')));
+                jumpForm.appendChild(makeInput('id', item.data('id')));
                 jumpForm.submit();
             });
         });
-    });
+    }(jQuery);
 </script>
