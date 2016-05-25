@@ -1433,8 +1433,8 @@
                 $collection->where()->field('gallery_id')->is($gallery_id);
                 $collection->where()->field('sort')->gt($i);
                 if ($collection->count()) {
-                    foreach ($collection as $item) {
-                        $item->sort = $i++;
+                    foreach ($collection as $row) {
+                        $item->row = $i++;
                         $manager->save($item);
                     }
                 }
