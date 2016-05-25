@@ -44,9 +44,7 @@
         {
             $layout = $this->getLayout();
             $app = $layout->getController()->getApp();
-            /**
-             * @var \PHY\Database\IDatabase $database
-             */
+            /** @var \PHY\Database\IDatabase $database */
             $database = $app->get('database');
             /** @var Manager $manager */
             $manager = $database->getManager();
@@ -62,20 +60,18 @@
         public function index_post()
         {
             $layout = $this->getLayout();
-            $fields = $this->getRequest()->get('email', []);
+            $fields = $this->getRequest()->get('contact', []);
             $success = false;
             $error = 'Something seems to have gone astray.';
             try {
 
                 $app = $this->getLayout()->getController()->getApp();
-                /**
-                 * @var \PHY\Database\IDatabase $database
-                 */
+                /** @var \PHY\Database\IDatabase $database */
                 $database = $app->get('database');
+                /** @var Manager $manager */
                 $manager = $database->getManager();
-                $email = $manager->load(['key' => 'Email'], new ConfigModel);
 
-                $success = mail($email->value, 'NEW WEBSITE MESSAGE', 'Name: ' . $fields['Name'] . PHP_EOL . 'Email: ' . $fields['Email'] . PHP_EOL . PHP_EOL . $fields['Message'], 'From: ' . $email->value . "\r\n");
+                $success = mail($this->getEmail($manager)->value, 'NEW WEBSITE MESSAGE', 'Name: ' . $fields['Name'] . PHP_EOL . 'Email: ' . $fields['Email'] . PHP_EOL . PHP_EOL . $fields['Message'], 'From: ' . $email->value . "\r\n");
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
