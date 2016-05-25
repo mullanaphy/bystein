@@ -624,160 +624,6 @@
         }
 
         /**
-         * GET /admin/schedule
-         */
-        public function schedule_get()
-        {
-            $app = $this->getApp();
-            $request = $this->getRequest();
-            $id = $request->get('id', false);
-            $layout = $this->getLayout();
-            $content = $layout->block('content');
-
-            /**
-             * @var \PHY\Database\IDatabase $database
-             */
-            $database = $app->get('database');
-            $manager = $database->getManager();
-
-            if ($id !== false) {
-                if ($id) {
-                    $item = $manager->load($id, new Schedule);
-                } else {
-                    $item = new Schedule($request->get('schedule', []));
-                }
-                $content->setTemplate('admin/schedule/item.phtml');
-                $content->setVariable('item', $item);
-                $breadcrumb = $layout->block('breadcrumb');
-                $breadcrumb->setVariable('item', $item);
-            } else {
-                $pageId = (int)$request->get('pageId', 1);
-                if (!$pageId) {
-                    $pageId = 1;
-                }
-                $limit = (int)$request->get('limit', $this->getLimit());
-                if (!$limit) {
-                    $limit = $this->getLimit();
-                }
-
-                $collection = $manager->getCollection('Schedule');
-                $collection->limit((($pageId * $limit) - $limit), $limit);
-                $collection->order()->by('day')->by('start');
-
-                $content->setTemplate('admin/schedule/collection.phtml');
-                $content->setVariable('collection', $collection);
-                $content->setChild('pagination', [
-                    'viewClass' => 'pagination',
-                    'pageId' => $pageId,
-                    'limit' => $limit,
-                    'total' => $collection->count(),
-                    'url' => [
-                        $this->url('admin/schedule'),
-                        'limit' => $limit
-                    ]
-                ]);
-            }
-            if ($message = $app->get('session/admin/schedule/message')) {
-                $app->delete('session/admin/schedule/message');
-                $message['template'] = 'generic/message.phtml';
-                $content->setChild('message', $message);
-            }
-        }
-
-        /**
-         * POST /admin/schedule
-         */
-        public function schedule_post()
-        {
-            $app = $this->getApp();
-            $request = $this->getRequest();
-
-            /**
-             * @var \PHY\Database\IDatabase $database
-             */
-            $database = $app->get('database');
-            $manager = $database->getManager();
-
-            $id = (int)$request->get('id', 0);
-            $data = $request->get('schedule', [
-                'day' => 0,
-                'start' => 0,
-                'end' => 0,
-                'type' => '',
-                'level' => '',
-                'title' => '',
-            ]);
-            if ($id) {
-                $item = $manager->load($id, new Schedule);
-                if (!$item->exists() || $item->deleted) {
-                    return $this->renderResponse('schedule', [
-                        'title' => 'Not Scheduled!',
-                        'type' => 'warning',
-                        'message' => 'No schedule found for id: ' . $id
-                    ]);
-                }
-            } else {
-                $item = new Schedule($data);
-            }
-            $data['end'] -= .5;
-            $item->set($data);
-            $manager->save($item);
-            return $this->renderResponse('schedule', [
-                'title' => 'Busy Busy!',
-                'type' => 'success',
-                'message' => 'Successfully updated: ' . $item->getClassName()
-            ]);
-        }
-
-        /**
-         * PUT /admin/schedule
-         */
-        public function schedule_put()
-        {
-            $this->schedule_post();
-        }
-
-        /**
-         * DELETE /admin/schedule/id/{id}
-         */
-        public function schedule_delete()
-        {
-            $app = $this->getApp();
-            $request = $this->getRequest();
-
-            /**
-             * @var \PHY\Database\IDatabase $database
-             */
-            $database = $app->get('database');
-            $manager = $database->getManager();
-
-            $id = (int)$request->get('id', 0);
-            if ($id) {
-                $item = $manager->load($id, new Schedule);
-                if (!$item->exists() || $item->deleted) {
-                    return $this->renderResponse('schedule', [
-                        'title' => 'Blank Calendar...',
-                        'type' => 'warning',
-                        'message' => 'No schedule found for id: ' . $id
-                    ]);
-                }
-            } else {
-                return $this->renderResponse('schedule', [
-                    'title' => 'It\'s your day off.',
-                    'type' => 'warning',
-                    'message' => 'No schedule id provided.'
-                ]);
-            }
-            $className = $item->getClassName();
-            $manager->delete($item);
-            return $this->renderResponse('schedule', [
-                'title' => 'More time off!',
-                'type' => 'success',
-                'message' => 'Successfully removed: ' . $className
-            ]);
-        }
-
-        /**
          * GET /admin/gallery
          */
         public function gallery_get()
@@ -1582,6 +1428,9 @@
             ]);
         }
 
+        /**
+         * POST /admin/imageCrop
+         */
         public function imageCrop_post()
         {
             $request = $this->getRequest();
@@ -1638,6 +1487,9 @@
                     : ''));
         }
 
+        /**
+         * GET /admin/imageCrop
+         */
         public function imageCrop_get()
         {
             $app = $this->getApp();
@@ -1691,6 +1543,125 @@
                 $message['template'] = 'generic/message.phtml';
                 $content->setChild('message', $message);
             }
+        }
+
+        /**
+         * GET /admin/imageThumbnail
+         */
+        public function imageThumbnail_get()
+        {
+            $app = $this->getApp();
+            $request = $this->getRequest();
+            $id = (int)$request->get('id', 0);
+            $galleryId = (int)$request->get('gallery_id', 0);
+
+            if (!$id) {
+                return $this->renderResponse('image', [
+                    'title' => 'Image Not Found!',
+                    'type' => 'warning',
+                    'message' => 'No image found for id: ' . $id
+                ]);
+            }
+
+            $layout = $this->getLayout();
+
+            /**
+             * @var \PHY\Database\IDatabase $database
+             */
+            $database = $app->get('database');
+            $manager = $database->getManager();
+
+            $item = $manager->load($id, new Image);
+
+            if (!$item->exists() || $item->deleted) {
+                return $this->renderResponse('image', [
+                    'title' => 'Image never existed...',
+                    'type' => 'warning',
+                    'message' => 'No config found for id: ' . $id
+                ]);
+            }
+
+            $content = $layout->block('content');
+            $content->setTemplate('admin/image/thumbnail.phtml');
+            $content->setVariable('item', $item);
+
+            $breadcrumb = $layout->block('breadcrumb');
+            $breadcrumb->setTemplate('admin/image/thumbnail/breadcrumb.phtml');
+            $breadcrumb->setVariable('item', $item);
+            $breadcrumb->setVariable('galleryId', $galleryId);
+
+            if ($message = $app->get('session/admin/imageThumbnail/message')) {
+                $app->delete('session/admin/imageThumbnail/message');
+                $message['template'] = 'generic/message.phtml';
+                $content->setChild('message', $message);
+            }
+        }
+
+        /**
+         * POST /admin/imageThumbnail
+         */
+        public function imageThumbnail_post()
+        {
+            $request = $this->getRequest();
+            $id = (int)$request->get('id', 0);
+            $galleryId = (int)$request->get('gallery_id', 0);
+
+            if (!$id) {
+                return $this->renderResponse('image', [
+                    'type' => 'error',
+                    'message' => 'Item not found.',
+                ]);
+            }
+
+            $app = $this->getApp();
+            $request = $this->getRequest();
+
+            $cropper = $request->get('thumbnail', []);
+
+            /**
+             * @var \PHY\Database\IDatabase $database
+             */
+            $database = $app->get('database');
+            $manager = $database->getManager();
+
+            $item = $manager->load($id, new Image);
+
+            if (!$item->exists() || $item->deleted) {
+                return $this->renderResponse('image', [
+                    'title' => 'Image Not Found!',
+                    'type' => 'warning',
+                    'message' => 'No image found for id: ' . $id,
+                ]);
+            }
+
+            if (!isset($_FILES, $_FILES['file'], $_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+
+            }
+            $filename = date('YmdHis') . '-' . $_FILES['file']['name'];
+            $directory = $app->getPublicDirectory() . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'uploaded' . DIRECTORY_SEPARATOR . 'image';
+            $file = $directory . DIRECTORY_SEPARATOR . $filename;
+
+            if (!is_writable($directory)) {
+                return $this->renderResponse('image', [
+                    'title' => 'No Bueno...',
+                    'type' => 'warning',
+                    'message' => 'Seems ' . $directory . ' is no writable...'
+                ]);
+            }
+
+            move_uploaded_file($_FILES['file']['tmp_name'], $file);
+
+            $item->set('file', '/media/uploaded/image/' . $filename);
+
+            $manager->save($item);
+
+            return $this->renderResponse('imageThumbnail', [
+                'title' => 'Thumbnail created',
+                'type' => 'success',
+                'message' => 'Successfully cropped: ' . $item->id()
+            ], '/admin/imageThumbnail/id/' . $item->id() . ($galleryId
+                    ? '/gallery_id/' . $galleryId
+                    : ''));
         }
 
         private function renderResponse($action, $message, $redirect = '')

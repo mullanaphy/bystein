@@ -67,6 +67,7 @@
                     FROM `gallery_linked` l
                         INNER JOIN `image` i ON (l.`image_id` = i.`id`)
                     WHERE l.`gallery_id` = " . (int)$id . "
+                    ORDER BY l.`sort` ASC
                     LIMIT 13");
                 $rows = [];
                 while ($row = $query->fetch_assoc()) {
