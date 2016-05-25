@@ -31,7 +31,8 @@
                   "a": {
                     "data": {
                       "target": "#modal-contact",
-                      "toggle": "modal"
+                      "toggle": "modal",
+                      "remote": "false"
                     }
                   }
                 }
