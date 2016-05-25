@@ -81,7 +81,7 @@
                 $content = $layout->block('content');
                 $content->setChild('contact/message', [
                     'template' => 'generic/message/success.phtml',
-                    'message' => 'Thank you for your submission, I should get back to you within 24 hours. <a href="/">Please click here to return home!</a>'
+                    'message' => '<p>Thank you for your submission, I should get back to you within 24 hours.</p><p><a href="/">Please click here to return home!</a></p>'
                 ]);
                 foreach ($fields as $field => $value) {
                     $content->setVariable($field, $value);
@@ -90,7 +90,7 @@
                 $content = $layout->block('content');
                 $content->setChild('contact/message', [
                     'template' => 'generic/message/error.phtml',
-                    'message' => $error,
+                    'message' => '<p>' . $error . '</p><p><a href="/">Please click here to return home!</a></p>',
                     ''
                 ]);
             }
