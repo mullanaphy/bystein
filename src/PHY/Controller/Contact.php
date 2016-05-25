@@ -71,7 +71,8 @@
                 /** @var Manager $manager */
                 $manager = $database->getManager();
 
-                $success = mail($this->getEmail($manager)->value, 'NEW WEBSITE MESSAGE', 'Name: ' . $fields['Name'] . PHP_EOL . 'Email: ' . $fields['Email'] . PHP_EOL . PHP_EOL . $fields['Message'], 'From: ' . $email->value . "\r\n");
+                $email = $this->getEmail($manager);
+                $success = mail($email->value, 'NEW WEBSITE MESSAGE', 'Name: ' . $fields['Name'] . PHP_EOL . 'Email: ' . $fields['Email'] . PHP_EOL . PHP_EOL . $fields['Message'], 'From: ' . $email->value . "\r\n");
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
