@@ -1290,22 +1290,42 @@
             }
             $item->set($data);
 
-            if (isset($_FILES, $_FILES['file'], $_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
-                $filename = date('YmdHis') . '-' . $_FILES['file']['name'];
-                $directory = $app->getPublicDirectory() . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'uploaded' . DIRECTORY_SEPARATOR . 'image';
-                $file = $directory . DIRECTORY_SEPARATOR . $filename;
+            if (isset($_FILES)) {
+                if (isset($_FILES['file'], $_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
+                    $filename = date('YmdHis') . '-' . $_FILES['file']['name'];
+                    $directory = $app->getPublicDirectory() . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'uploaded' . DIRECTORY_SEPARATOR . 'image';
+                    $file = $directory . DIRECTORY_SEPARATOR . $filename;
 
-                if (!is_writable($directory)) {
-                    return $this->renderResponse('image', [
-                        'title' => 'No Bueno...',
-                        'type' => 'warning',
-                        'message' => 'Seems ' . $directory . ' is no writable...'
-                    ]);
+                    if (!is_writable($directory)) {
+                        return $this->renderResponse('image', [
+                            'title' => 'No Bueno...',
+                            'type' => 'warning',
+                            'message' => 'Seems ' . $directory . ' is no writable...'
+                        ]);
+                    }
+
+                    move_uploaded_file($_FILES['file']['tmp_name'], $file);
+
+                    $item->set('file', '/media/uploaded/image/' . $filename);
                 }
 
-                move_uploaded_file($_FILES['file']['tmp_name'], $file);
+                if (isset($_FILES['thumbnail'], $_FILES['thumbnail']['tmp_name']) && is_uploaded_file($_FILES['thumbnail']['tmp_name'])) {
+                    $filename = date('YmdHis') . '-' . $_FILES['file']['name'];
+                    $directory = $app->getPublicDirectory() . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'uploaded' . DIRECTORY_SEPARATOR . 'image';
+                    $file = $directory . DIRECTORY_SEPARATOR . 't-' . $filename;
 
-                $item->set('file', '/media/uploaded/image/' . $filename);
+                    if (!is_writable($directory)) {
+                        return $this->renderResponse('image', [
+                            'title' => 'No Bueno...',
+                            'type' => 'warning',
+                            'message' => 'Seems ' . $directory . ' is no writable...'
+                        ]);
+                    }
+
+                    move_uploaded_file($_FILES['thumbnail']['tmp_name'], $file);
+
+                    $item->set('thumbnail', '/media/uploaded/image/t-' . $filename);
+                }
             }
 
             $manager->save($item);

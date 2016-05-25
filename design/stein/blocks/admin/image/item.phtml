@@ -44,14 +44,24 @@
     <div class="row">
         <div class="col-sm-6 col-lg-6">
             <div class="form-group">
-                <label for="image-title" class="control-label">Image<?php if ($item->file): ?>
+                <label for="image-file" class="control-label">Image</label>
+                <input id="image-file" class="form-control" name="file" type="file"/>
+                <label for="image-thumbnail">Thumbnail<?php if ($item->file): ?>
                         <small><em><a
-                                href="<?= $this->url('admin/imageCrop/id/' . $item->id() . (isset($galleryId) && $galleryId
-                                        ? '/gallery_id/' . $galleryId
-                                        : '')) ?>"
-                                class="btn btn-sm btn-success">create
-                                thumbnail</a></em></small><?php endif ?></label>
-                <input id="image-title" class="form-control" name="file" type="file"/>
+                                    href="<?= $this->url('admin/imageCrop/id/' . $item->id() . (isset($galleryId) && $galleryId
+                                            ? '/gallery_id/' . $galleryId
+                                            : '')) ?>"
+                                    class="btn btn-sm btn-success">Crop Image</a></em></small>
+                    <?php endif ?>
+                </label>
+                <input id="image-thumbnail" class="form-control" name="thumbnail" type="file"/>
+                <?php if ($item->file): ?>
+                    <small><em><a
+                            href="<?= $this->url('admin/imageCrop/id/' . $item->id() . (isset($galleryId) && $galleryId
+                                    ? '/gallery_id/' . $galleryId
+                                    : '')) ?>"
+                            class="btn btn-sm btn-success">create
+                            thumbnail</a></em></small><?php endif ?>
 
                 <div class="thumbnail">
                     <img src="<?= $item->file ?>" class="img-responsive"/>
