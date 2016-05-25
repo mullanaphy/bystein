@@ -22,7 +22,7 @@
     use PHY\Http\Response\Json as JsonResponse;
     use PHY\Http\Response\Xml as XmlResponse;
     use PHY\Model\Authorize;
-    use PHY\Model\Config;
+    use PHY\Model\Config as ConfigModel;
     use PHY\Model\User;
     use PHY\Model\Image;
     use PHY\Model\Gallery;
@@ -111,7 +111,7 @@
              */
             $database = $app->get('database');
             $manager = $database->getManager();
-            $config = $manager->load(['key' => 'email'], new Config);
+            $config = $manager->load(['key' => 'email'], new ConfigModel);
             $content->setVariable('email', $config->value);
             $content->setVariable('user', $app->getUser());
 
@@ -487,9 +487,9 @@
 
             if ($id !== false) {
                 if ($id) {
-                    $item = $manager->load($id, new Config);
+                    $item = $manager->load($id, new ConfigModel);
                 } else {
-                    $item = new Config($request->get('config', []));
+                    $item = new ConfigModel($request->get('config', []));
                 }
                 $content->setTemplate('admin/config/item.phtml');
                 $content->setVariable('item', $item);
@@ -547,9 +547,10 @@
             $data = $request->get('config', [
                 'key' => '',
                 'value' => '',
+                'type' => 'variable',
             ]);
             if ($id) {
-                $item = $manager->load($id, new Config);
+                $item = $manager->load($id, new ConfigModel);
                 if (!$item->exists() || $item->deleted) {
                     return $this->renderResponse('config', [
                         'title' => 'Not Configured!',
@@ -558,10 +559,12 @@
                     ]);
                 }
             } else {
-                $item = new Config($data);
+                $item = new ConfigModel($data);
             }
+
             $item->set($data);
             $manager->save($item);
+
             return $this->renderResponse('config', [
                 'title' => 'Configured!',
                 'type' => 'success',
@@ -593,7 +596,7 @@
 
             $id = (int)$request->get('id', 0);
             if ($id) {
-                $item = $manager->load($id, new Config);
+                $item = $manager->load($id, new ConfigModel);
                 if (!$item->exists() || $item->deleted) {
                     return $this->renderResponse('config', [
                         'title' => 'Wasn\'t me...',
@@ -1749,7 +1752,7 @@
             if ($this->limit === null) {
                 $this->limit = 20;
                 $manager = $this->getApp()->get('database')->getManager();
-                $limit = $manager->load(['key' => 'page_limit'], new Config);
+                $limit = $manager->load(['key' => 'page_limit'], new ConfigModel);
                 if ($limit && $limit->value) {
                     $this->limit = (int)$limit->value;
                 }
