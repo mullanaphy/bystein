@@ -559,7 +559,7 @@
                     ]);
                 }
             } else {
-                $item = new ConfigModel($data);
+                $item = new ConfigModel;
             }
 
             $item->set($data);
