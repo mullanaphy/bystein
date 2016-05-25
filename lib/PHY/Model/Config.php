@@ -182,8 +182,9 @@
                 return array_key_exists('value_' . $type, $this->data)
                     ? $this->data['value_' . $type]
                     : null;
+            } else {
+                return parent::get($key);
             }
-            return parent::get($key);
         }
 
         /**
@@ -201,7 +202,6 @@
                 unset($data['value']);
             }
             return parent::init($data);
-
         }
 
         /**
@@ -214,7 +214,7 @@
                     $this->set($k, $v);
                 }
             } else if ($key === 'value') {
-                if (!array_key_exists('type', $this->data) || $this->data['type']) {
+                if (!array_key_exists('type', $this->data) || !$this->data['type']) {
                     $this->data['type'] = 'variable';
                 }
                 $this->data['key_' . $this->data['type']] = $this->get('key');
@@ -229,7 +229,7 @@
                     $this->set('value', $val);
                 } else {
                     $this->data['type'] = $value;
-                    $this->data['key_' . $this->data['type']] = $this->get('key');
+                    $this->data['key_' . $value] = $this->get('key');
                 }
             } else {
                 return parent::set($key, $value);
