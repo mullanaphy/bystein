@@ -63,8 +63,11 @@
                 $image = new Image($row);
                 $rows[] = $markup->div($markup->div($markup->a($markup->img([
                     'src' => $image->thumbnail,
-                    'alt' => $image->title
-                ]), ['href' => $image->getImage()]), ['class' => 'thumbnail']), ['class' => 'col-xs-4 col-sm-2']);
+                    'alt' => $image->title,
+                ]), [
+                    'href' => $image->getImage(),
+                    'data' => ['toggle' => 'lightbox', 'parent' => '.thumbnail-gallery'],
+                ]), ['class' => 'thumbnail']), ['class' => 'col-xs-4 col-sm-2']);
             }
 
             if (!$rows) {
