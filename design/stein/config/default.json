@@ -22,7 +22,12 @@
             "links": {
               "resume": {
                 "title": "R\u00e9sum\u00e9",
-                "url": "chris-stein-resume.pdf"
+                "url": "chris-stein-resume.pdf",
+                "attributes": {
+                  "a": {
+                    "target": "_blank"
+                  }
+                }
               },
               "contact": {
                 "title": "Contact",
